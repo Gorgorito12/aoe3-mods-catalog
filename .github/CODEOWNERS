@@ -1,0 +1,11 @@
+# Default — only Gorgorito12 can land changes outside /mods/.
+# Touches to workflows, schema, scripts, etc. should always involve their review.
+*                          @Gorgorito12
+
+# Each mod's folder is owned by its author. The launcher's "core" mods
+# (WoL + IM) stay under Gorgorito12 since they are maintained by you.
+/mods/wol/                 @Gorgorito12
+/mods/improvement-mod/     @Gorgorito12
+
+# Add new modders here as you accept their first PR. Format:
+#   /mods/<mod-id>/        @<github-username>
