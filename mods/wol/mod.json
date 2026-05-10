@@ -8,7 +8,7 @@
   "officialWebsite": "http://aoe3wol.com/",
   "description": {
     "en": "Total-conversion mod for AoE3, set in 19th-century colonial wars.",
-    "es": "Mod de conversión total para AoE3, ambientado en las guerras coloniales del siglo XIX."
+    "es": "Mod de conversión total para AoE3, ambientado en las guerras coloniales del siglo XIX. Incluye nuevas civilizaciones, mapas y unidades."
   },
   "install": {
     "type": "IsolatedFolder",
