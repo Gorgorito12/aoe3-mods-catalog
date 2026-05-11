@@ -4,24 +4,22 @@
   "displayName": "Improvement Mod",
   "subtitle": "AoE3:TAD overhaul",
   "accentColor": "#3a8cd9",
+  "author": "Improvement Mod Team",
+  "officialWebsite": "https://www.moddb.com/mods/improvement-mod",
   "description": {
-    "en": "Overhaul mod for AoE3: The Asian Dynasties. After install, updates are handled by the mod's own age3m.exe patcher.",
-    "es": "Mod de mejora para AoE3: The Asian Dynasties. Después de instalar, las actualizaciones las maneja el parcher age3m.exe del propio mod."
+    "en": "Overhaul mod for AoE3: The Asian Dynasties. Ships its own age3m.exe alongside the original AoE3 binaries; the launcher downloads the mod's release archive and overlays it on the existing AoE3 install.",
+    "es": "Mod de mejora para AoE3: The Asian Dynasties. Trae su propio age3m.exe junto a los binarios originales de AoE3; el launcher descarga el archivo de la release del mod y lo aplica sobre la instalación existente de AoE3."
   },
+  "sourceRepo": "papillo12/Improvement-Mod",
+  "approvedReleaseTag": "Improvement-Mod",
   "install": {
     "type": "InPlaceOverlay",
     "defaultFolder": "",
     "probeFile": "age3m.exe",
     "executable": "age3m.exe",
-    "arguments": "",
-    "payloadUrls": [
-      "https://github.com/papillo12/Improvement-Mod/releases/download/Improvement-Mod/AoE3ImpMod_New18.zip"
-    ],
-    "payloadSha256": [
-      "1F59E1FC61653184D66EA30DE6ADE9534064A3CF2D4A2A7368539B03157A2484"
-    ]
+    "arguments": ""
   },
   "update": {
-    "mechanism": "DelegatedExternal"
+    "mechanism": "GitHubReleases"
   }
 }
