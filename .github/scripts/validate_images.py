@@ -1,6 +1,6 @@
 """
-Validate that icon.png and banner.png in every mod folder meet the spec
-documented in CONTRIBUTING.md.
+Validate that icon.png, banner.png and hero.png in every mod folder meet
+the spec documented in CONTRIBUTING.md.
 
 Specs (kept here as the single source of truth — keep CONTRIBUTING.md in sync):
 
@@ -13,6 +13,16 @@ Specs (kept here as the single source of truth — keep CONTRIBUTING.md in sync)
     - PNG or JPEG
     - exactly 1200x300 px
     - <= 500 KB on disk
+    - Use case: horizontal mod card thumbnail in the Workshop browser
+
+  hero.png/hero.jpg   (OPTIONAL — declared as "heroImage")
+    - PNG or JPEG
+    - exactly 1920x1080 px
+    - <= 2 MB on disk
+    - Use case: large background image painted behind the title +
+      PLAY button on the launcher's dashboard panel
+    - Composition tip: keep the important subject on the RIGHT half;
+      the left half is covered by the title and PLAY button
 
 Image specs are enforced strictly — the workflow fails the PR if anything is
 out of spec, with a list of every violation across every changed asset.
@@ -30,6 +40,7 @@ from PIL import Image
 # Dimension/weight specs. (width, height, max_bytes, allowed_formats)
 ICON_SPEC = (256, 256, 100 * 1024, {"PNG"})
 BANNER_SPEC = (1200, 300, 500 * 1024, {"PNG", "JPEG"})
+HERO_SPEC = (1920, 1080, 2 * 1024 * 1024, {"PNG", "JPEG"})
 
 
 def check_icon(path: Path) -> list[str]:
@@ -69,6 +80,40 @@ def check_icon(path: Path) -> list[str]:
 
 def check_banner(path: Path) -> list[str]:
     width, height, max_bytes, formats = BANNER_SPEC
+    errors: list[str] = []
+
+    size = path.stat().st_size
+    if size > max_bytes:
+        errors.append(
+            f"{path}: file size {size:,} bytes exceeds limit of {max_bytes:,}"
+        )
+
+    try:
+        img = Image.open(path)
+    except Exception as e:
+        errors.append(f"{path}: cannot open image — {e}")
+        return errors
+
+    if img.format not in formats:
+        errors.append(
+            f"{path}: format {img.format!r} not in allowed {sorted(formats)}"
+        )
+
+    if img.size != (width, height):
+        errors.append(
+            f"{path}: dimensions {img.size} != required ({width}, {height})"
+        )
+
+    return errors
+
+
+def check_hero(path: Path) -> list[str]:
+    """Validate the dashboard hero background image.
+
+    Larger than the Workshop banner because it covers the entire hero
+    panel of the launcher (~1920x900) rather than just a card thumbnail.
+    """
+    width, height, max_bytes, formats = HERO_SPEC
     errors: list[str] = []
 
     size = path.stat().st_size
@@ -138,6 +183,17 @@ def main() -> int:
                 )
             else:
                 all_errors.extend(check_banner(banner_path))
+
+        # Hero image: optional.
+        hero_name = manifest.get("heroImage")
+        if hero_name:
+            hero_path = mod_dir / hero_name
+            if not hero_path.exists():
+                all_errors.append(
+                    f"{manifest_path}: declares heroImage {hero_name!r} but file is missing"
+                )
+            else:
+                all_errors.extend(check_hero(hero_path))
 
     if all_errors:
         print("Image validation FAILED — fix these issues:")

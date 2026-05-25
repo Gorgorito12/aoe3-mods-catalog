@@ -6,6 +6,7 @@
   "accentColor": "#9b59b6",
   "author": "papillo12",
   "officialWebsite": "https://github.com/papillo12/aoe3-mods-catalog",
+  "heroImage": "hero.jpg",
   "description": {
     "en": "Demo mod added to verify the catalog flow end-to-end. Safe to delete after testing.",
     "es": "Mod de demostración para verificar el flujo del catálogo de extremo a extremo. Seguro de eliminar tras la prueba."

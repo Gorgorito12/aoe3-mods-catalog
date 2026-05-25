@@ -48,7 +48,12 @@
     "banner": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg)$",
-      "description": "Filename of banner.png/banner.jpg in the same folder. Specs: 1200x300, <= 500 KB."
+      "description": "Filename of banner.png/banner.jpg in the same folder. Specs: 1200x300, <= 500 KB. Used in the Workshop mod card (horizontal thumbnail) — NOT the dashboard background. For that, see heroImage."
+    },
+    "heroImage": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg)$",
+      "description": "Filename of the large background image painted behind the title + PLAY button on the dashboard (the 'hero' area). Specs: 1920x1080 PNG/JPG, <= 2 MB. Composition recommendation: keep the visually important subject in the RIGHT half of the image — the left half is covered by the mod title and the PLAY button, with a dark-to-transparent gradient on top for text legibility. The launcher applies UniformToFill stretch, so the image may be cropped slightly at the edges to match the dashboard aspect ratio."
     },
     "description": {
       "type": "object",

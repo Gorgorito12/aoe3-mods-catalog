@@ -77,8 +77,11 @@ Create `.github/CODEOWNERS`:
 
 ### 6. Add `CONTRIBUTING.md` for modders
 A short doc telling them:
-- The folder structure (`mods/<id>/{mod.json, icon.png, banner.png}`)
-- The image specs (256×256 PNG ≤100 KB; 1200×300 PNG/JPG ≤500 KB)
+- The folder structure (`mods/<id>/{mod.json, icon.png, banner.png, hero.jpg}`)
+- The image specs:
+  - **icon.png** — 256×256 PNG with alpha, ≤100 KB. Used in the Workshop tile.
+  - **banner.png/jpg** — 1200×300 PNG/JPG, ≤500 KB. Used in the Workshop mod card (horizontal thumbnail). Declared in mod.json as `"banner": "banner.jpg"`.
+  - **hero.png/jpg** — 1920×1080 PNG/JPG, ≤2 MB. Used as the dashboard background painted behind the title + PLAY button. Important subject on the RIGHT half (the left half is covered by the title and PLAY button). Declared in mod.json as `"heroImage": "hero.jpg"`.
 - The schema URL to point their editor at
 - That cosmetic and release-bump PRs auto-merge
 
@@ -129,7 +132,7 @@ The single source of truth for what counts as tier 1/2/3 is at the top of `.gith
 
 ```python
 TIER_1_FIELDS = {"displayName", "subtitle", "description", "accentColor",
-                 "author", "officialWebsite", "icon", "banner"}
+                 "author", "officialWebsite", "icon", "banner", "heroImage"}
 TIER_2_FIELDS = {"approvedReleaseTag"}
 TIER_3_FIELDS = {"id", "sourceRepo", "install", "update", "translations"}
 ```

@@ -47,6 +47,7 @@ TIER_1_FIELDS = {
     "officialWebsite",
     "icon",
     "banner",
+    "heroImage",
 }
 
 # Release-pin fields. Changes to ONLY these are tier 2 (auto-merge with extra
@@ -66,7 +67,12 @@ TIER_3_FIELDS = {
 
 # Files allowed inside a mod folder. Anything else is suspicious enough to
 # force manual review.
-ALLOWED_ASSETS = {"icon.png", "banner.png", "banner.jpg", "banner.jpeg", "mod.json"}
+ALLOWED_ASSETS = {
+    "icon.png",
+    "banner.png", "banner.jpg", "banner.jpeg",
+    "hero.png", "hero.jpg", "hero.jpeg",
+    "mod.json",
+}
 
 
 # -------- Helpers ------------------------------------------------------------
