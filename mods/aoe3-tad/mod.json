@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "aoe3-tad",
+  "displayName": "Age of Empires III: The Asian Dynasties",
+  "subtitle": "Original base game",
+  "accentColor": "#caa14a",
+  "author": "Ensemble Studios, Big Huge Games",
+  "officialWebsite": "https://www.ageofempires.com/games/aoeiii/",
+  "description": {
+    "en": "The second expansion to Age of Empires III, by Ensemble Studios and Big Huge Games. The Asian Dynasties adds three Asian civilizations — Japanese, Chinese and Indians — that advance through the ages by raising Wonders, plus new campaigns, maps, the Consulate, and naval and trade additions. This is the unmodded base game: the launcher only detects and runs your own legally-owned copy, it never installs it.",
+    "es": "La segunda expansión de Age of Empires III, de Ensemble Studios y Big Huge Games. The Asian Dynasties suma tres civilizaciones asiáticas —japoneses, chinos e indios— que avanzan de edad construyendo Maravillas, además de nuevas campañas, mapas, el Consulado y agregados navales y de comercio. Es el juego base sin mods: el launcher solo detecta y ejecuta tu propia copia legal, nunca lo instala."
+  },
+  "install": {
+    "type": "InPlaceOverlay",
+    "defaultFolder": "",
+    "probeFile": "data\\protoy.xml",
+    "executable": "age3y.exe",
+    "arguments": ""
+  },
+  "update": {
+    "mechanism": "Manual"
+  }
+}
