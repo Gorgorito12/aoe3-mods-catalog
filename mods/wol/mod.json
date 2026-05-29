@@ -6,10 +6,11 @@
   "accentColor": "#c8102e",
   "author": "Wars of Liberty Team",
   "officialWebsite": "http://aoe3wol.com/",
+  "icon": "icon.png",
   "heroImage": "hero.jpg",
   "description": {
-    "en": "Total-conversion mod for AoE3, set in 19th-century colonial wars.",
-    "es": "Mod de conversión total para AoE3, ambientado en las guerras coloniales del siglo XIX. Incluye nuevas civilizaciones, mapas y unidades."
+    "en": "A free, community-made total conversion for Age of Empires III: The Asian Dynasties, set in the turbulent 19th century — wars of independence and colonial struggles across the Americas and beyond. Adds a huge roster of new civilizations (the United States, Mexico, Argentina, Brazil and many more), each with their own units, home cities, maps and mechanics.",
+    "es": "Conversión total gratuita hecha por la comunidad para Age of Empires III: The Asian Dynasties, ambientada en el convulso siglo XIX — guerras de independencia y luchas coloniales en América y más allá. Agrega un enorme elenco de civilizaciones nuevas (Estados Unidos, México, Argentina, Brasil y muchas más), cada una con sus propias unidades, metrópolis, mapas y mecánicas."
   },
   "install": {
     "type": "IsolatedFolder",
