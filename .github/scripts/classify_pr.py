@@ -48,6 +48,7 @@ TIER_1_FIELDS = {
     "icon",
     "banner",
     "heroImage",
+    "screenshots",
 }
 
 # Release-pin fields. Changes to ONLY these are tier 2 (auto-merge with extra
@@ -72,6 +73,12 @@ ALLOWED_ASSETS = {
     "banner.png", "banner.jpg", "banner.jpeg",
     "hero.png", "hero.jpg", "hero.jpeg",
     "mod.json",
+    # Gallery screenshots use a FIXED naming convention (screenshot1..screenshot8)
+    # so that asset-only screenshot PRs can auto-merge (tier1). Any other filename
+    # falls through to tier3 (manual review) — a safe default for a security gate.
+    *(f"screenshot{i}.{ext}"
+      for i in range(1, 9)
+      for ext in ("png", "jpg", "jpeg", "gif")),
 }
 
 
@@ -166,7 +173,8 @@ def main() -> int:
                 "tier3",
                 mod_id,
                 f"Unknown file in mod folder: {f}. "
-                "Only mod.json, icon.png, banner.png/jpg are recognised.",
+                "Only mod.json, icon.png, banner.png/jpg, hero.png/jpg and "
+                "screenshot1..8.png/jpg/gif are recognised.",
             )
             return 0
 

@@ -49,6 +49,8 @@ Two files must stay in sync, plus the classifier:
 1. `schema/mod.schema.json` — the field definition and validation (`additionalProperties: false`, so undeclared fields fail validation).
 2. `classify_pr.py` — add the field to exactly one of `TIER_1_FIELDS` / `TIER_2_FIELDS` / `TIER_3_FIELDS`. Omitting it means PRs touching it always go tier3.
 
+If the field references **new asset files** in the mod folder (like `screenshots`), you must ALSO add those filenames to `ALLOWED_ASSETS` in `classify_pr.py` — it's an exact-name allowlist, and any file not in it forces tier3 (manual review), which would break asset-only auto-merge. Screenshots use the fixed convention **`screenshot1..screenshot8`** (`.png/.jpg/.jpeg/.gif`) precisely so they can be enumerated in `ALLOWED_ASSETS`; off-convention names still pass schema validation but land in tier3.
+
 **Only ever move a field *up* in tier freely. Moving a field down (3→2, 2→1) weakens the security boundary** — anything that affects what the launcher downloads or executes (`install`, `update`, `sourceRepo`, `id`) must stay tier3.
 
 ### Image specs (single source of truth: `validate_images.py`)
@@ -58,6 +60,7 @@ Dimensions are enforced **exactly** (a 257×257 icon fails). Keep these in sync 
 - `icon.png` — 256×256, PNG **with alpha**, ≤100 KB. Required if `mod.json` declares `icon`.
 - `banner.png`/`.jpg` — 1200×300, PNG/JPEG, ≤500 KB. Workshop card thumbnail.
 - `hero.png`/`.jpg` — 1920×1080, PNG/JPEG, ≤2 MB. Dashboard background; keep the subject in the **right half** (left is covered by title + PLAY button).
+- `screenshot1.png`…`screenshot8.<ext>` — gallery shown in the Workshop detail panel. PNG/JPEG/**GIF** (animated GIFs allowed **here only**, not in banner/hero), **no fixed dimensions**, ≤2 MB each, max 8. Declared in `mod.json` as the `screenshots` array (a tier‑1 cosmetic field). The declared extension must match the real format. The fixed `screenshot<N>` naming is required for auto-merge (see `ALLOWED_ASSETS`).
 
 ## Manifest conventions (`mod.json`)
 

@@ -55,6 +55,15 @@
       "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg)$",
       "description": "Filename of the large background image painted behind the title + PLAY button on the dashboard (the 'hero' area). Specs: 1920x1080 PNG/JPG, <= 2 MB. Composition recommendation: keep the visually important subject in the RIGHT half of the image — the left half is covered by the mod title and the PLAY button, with a dark-to-transparent gradient on top for text legibility. The launcher applies UniformToFill stretch, so the image may be cropped slightly at the edges to match the dashboard aspect ratio."
     },
+    "screenshots": {
+      "type": "array",
+      "maxItems": 8,
+      "description": "Optional gallery of screenshots/GIFs shown in the Workshop detail panel (thumbnail strip + large viewer). Bare filenames in the same folder as mod.json (no subfolders). Animated GIFs are allowed HERE ONLY (not in banner/heroImage). No fixed dimensions; each file <= 2 MB. For auto-merge to apply, use the fixed naming convention screenshot1..screenshot8 (any other name still validates against this schema but lands in tier3 / manual review).",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg|gif)$"
+      }
+    },
     "description": {
       "type": "object",
       "description": "Per-language short description shown in the mod selector. Keys: ISO-639-1 codes (en, es, ...). The launcher falls back to 'en' when the user's language is not present.",
