@@ -79,9 +79,10 @@ Create `.github/CODEOWNERS`:
 A short doc telling them:
 - The folder structure (`mods/<id>/{mod.json, icon.png, banner.png, hero.jpg}`)
 - The image specs:
-  - **icon.png** — 256×256 PNG with alpha, ≤100 KB. Used in the Workshop tile.
-  - **banner.png/jpg** — 1200×300 PNG/JPG, ≤500 KB. Used in the Workshop mod card (horizontal thumbnail). Declared in mod.json as `"banner": "banner.jpg"`.
-  - **hero.png/jpg** — 1920×1080 PNG/JPG, ≤2 MB. Used as the dashboard background painted behind the title + PLAY button. Important subject on the RIGHT half (the left half is covered by the title and PLAY button). Declared in mod.json as `"heroImage": "hero.jpg"`.
+  - **icon.png** — square (1:1), width 256–1024 px, PNG with alpha, ≤1 MB. Used in the Workshop tile.
+  - **banner.png/jpg** — 4:1 aspect, width 1200–4800 px (e.g. 1200×300, 2400×600, 4800×1200), PNG/JPG, ≤2 MB. Used in the Workshop mod card (horizontal thumbnail). Declared in mod.json as `"banner": "banner.jpg"`.
+  - **hero.png/jpg** — 16:9 aspect, width 1920–3840 px (1080p up to 4K), PNG/JPG, ≤8 MB (use JPEG for 4K — a 4K PNG can be 10 MB+). Used as the dashboard background painted behind the title + PLAY button. Important subject on the RIGHT half (the left half is covered by the title and PLAY button). Declared in mod.json as `"heroImage": "hero.jpg"`.
+  - **heroImages** (rotating) — 2–6 hero images that cycle with a crossfade on the dashboard (~7 s each). Each follows the same spec as the single hero. Declared in mod.json as `"heroImages": ["hero1.jpg", "hero2.jpg", ...]` (takes precedence over `heroImage`).
 - The schema URL to point their editor at
 - That cosmetic and release-bump PRs auto-merge
 

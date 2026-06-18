@@ -55,12 +55,13 @@ If the field references **new asset files** in the mod folder (like `screenshots
 
 ### Image specs (single source of truth: `validate_images.py`)
 
-Dimensions are enforced **exactly** (a 257×257 icon fails). Keep these in sync with the schema field descriptions and any CONTRIBUTING.md:
+Dimensions are validated by **aspect ratio + a width range** (NOT a single exact size), so any resolution up to 4K passes as long as the shape is right — e.g. a hero can be 1920×1080, 2560×1440 or 3840×2160. Keep these in sync with the schema field descriptions and any CONTRIBUTING.md:
 
-- `icon.png` — 256×256, PNG **with alpha**, ≤100 KB. Required if `mod.json` declares `icon`.
-- `banner.png`/`.jpg` — 1200×300, PNG/JPEG, ≤500 KB. Workshop card thumbnail.
-- `hero.png`/`.jpg` — 1920×1080, PNG/JPEG, ≤2 MB. Dashboard background; keep the subject in the **right half** (left is covered by title + PLAY button).
-- `screenshot1.png`…`screenshot8.<ext>` — gallery shown in the Workshop detail panel. PNG/JPEG/**GIF** (animated GIFs allowed **here only**, not in banner/hero), **no fixed dimensions**, ≤2 MB each, max 8. Declared in `mod.json` as the `screenshots` array (a tier‑1 cosmetic field). The declared extension must match the real format. The fixed `screenshot<N>` naming is required for auto-merge (see `ALLOWED_ASSETS`).
+- `icon.png` — square (1:1, ±2%), width 256–1024 px, PNG **with alpha**, ≤1 MB. Required if `mod.json` declares `icon`.
+- `banner.png`/`.jpg` — 4:1 (±3%), width 1200–4800 px, PNG/JPEG, ≤2 MB. Workshop card thumbnail.
+- `hero.png`/`.jpg` — 16:9 (±3%), width 1920–3840 px (1080p up to 4K), PNG/JPEG, ≤8 MB (use JPEG for 4K — a 4K PNG can be 10 MB+). Dashboard background; keep the subject in the **right half** (left is covered by title + PLAY button).
+- `heroImages[]` — optional rotating dashboard heroes (2–6), each the **same spec as `hero`**. When ≥2 are listed the launcher cycles them with a crossfade (~7 s); takes precedence over the single `heroImage`. Validated per-entry by `check_hero`, capped at `MAX_HEROES` (6, must match the launcher's `MaxHeroes`).
+- `screenshot1.png`…`screenshot8.<ext>` — gallery shown in the Workshop detail panel. PNG/JPEG/**GIF** (animated GIFs allowed **here only**, not in banner/hero), **no fixed dimensions**, ≤8 MB each, max 8. Declared in `mod.json` as the `screenshots` array (a tier‑1 cosmetic field). The declared extension must match the real format. The fixed `screenshot<N>` naming is required for auto-merge (see `ALLOWED_ASSETS`).
 
 ## Manifest conventions (`mod.json`)
 

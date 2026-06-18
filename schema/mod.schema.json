@@ -43,22 +43,31 @@
     "icon": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9_-]+\\.png$",
-      "description": "Filename of icon.png in the same folder. Specs: 256x256, PNG with alpha, <= 100 KB."
+      "description": "Filename of icon.png in the same folder. Specs: square (1:1), width 256-1024 px, PNG with alpha, <= 1 MB."
     },
     "banner": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg)$",
-      "description": "Filename of banner.png/banner.jpg in the same folder. Specs: 1200x300, <= 500 KB. Used in the Workshop mod card (horizontal thumbnail) — NOT the dashboard background. For that, see heroImage."
+      "description": "Filename of banner.png/banner.jpg in the same folder. Specs: 4:1 aspect, width 1200-4800 px (e.g. 1200x300, 2400x600, 4800x1200), <= 2 MB. Used in the Workshop mod card (horizontal thumbnail) — NOT the dashboard background. For that, see heroImage / heroImages."
     },
     "heroImage": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg)$",
-      "description": "Filename of the large background image painted behind the title + PLAY button on the dashboard (the 'hero' area). Specs: 1920x1080 PNG/JPG, <= 2 MB. Composition recommendation: keep the visually important subject in the RIGHT half of the image — the left half is covered by the mod title and the PLAY button, with a dark-to-transparent gradient on top for text legibility. The launcher applies UniformToFill stretch, so the image may be cropped slightly at the edges to match the dashboard aspect ratio."
+      "description": "Filename of the large background image painted behind the title + PLAY button on the dashboard (the 'hero' area). Specs: 16:9 aspect, width 1920-3840 px (1080p up to 4K), PNG/JPG, <= 8 MB (use JPEG for 4K — a 4K PNG can be 10 MB+). Composition recommendation: keep the visually important subject in the RIGHT half of the image — the left half is covered by the mod title and the PLAY button, with a dark-to-transparent gradient on top for text legibility. The launcher stretches the image to fill the dashboard panel. For multiple rotating heroes, use heroImages instead."
+    },
+    "heroImages": {
+      "type": "array",
+      "maxItems": 6,
+      "description": "Optional gallery of dashboard hero backgrounds that ROTATE with a crossfade (auto, ~7 s each) when 2 or more are listed. Bare filenames in the same folder as mod.json. Each image has the SAME spec as heroImage (16:9, width 1920-3840 px, PNG/JPG, <= 8 MB each). If both heroImage and heroImages are present, heroImages takes precedence on the dashboard.",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg)$"
+      }
     },
     "screenshots": {
       "type": "array",
       "maxItems": 8,
-      "description": "Optional gallery of screenshots/GIFs shown in the Workshop detail panel (thumbnail strip + large viewer). Bare filenames in the same folder as mod.json (no subfolders). Animated GIFs are allowed HERE ONLY (not in banner/heroImage). No fixed dimensions; each file <= 2 MB. For auto-merge to apply, use the fixed naming convention screenshot1..screenshot8 (any other name still validates against this schema but lands in tier3 / manual review).",
+      "description": "Optional gallery of screenshots/GIFs shown in the Workshop detail panel (thumbnail strip + large viewer). Bare filenames in the same folder as mod.json (no subfolders). Animated GIFs are allowed HERE ONLY (not in banner/heroImage). No fixed dimensions; each file <= 8 MB. For auto-merge to apply, use the fixed naming convention screenshot1..screenshot8 (any other name still validates against this schema but lands in tier3 / manual review).",
       "items": {
         "type": "string",
         "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg|gif)$"
