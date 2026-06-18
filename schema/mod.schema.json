@@ -53,12 +53,12 @@
     "heroImage": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg)$",
-      "description": "Filename of the large background image painted behind the title + PLAY button on the dashboard (the 'hero' area). Specs: 16:9 aspect, width 1920-3840 px (1080p up to 4K), PNG/JPG, <= 8 MB (use JPEG for 4K — a 4K PNG can be 10 MB+). Composition recommendation: keep the visually important subject in the RIGHT half of the image — the left half is covered by the mod title and the PLAY button, with a dark-to-transparent gradient on top for text legibility. The launcher stretches the image to fill the dashboard panel. For multiple rotating heroes, use heroImages instead."
+      "description": "Filename of the large background image painted behind the title + PLAY button on the dashboard (the 'hero' area). Specs: 16:9 aspect, width 1920-3840 px (1080p up to 4K), PNG/JPG, <= 5 MB (use JPEG for 4K — a 4K PNG can be 10 MB+). Composition recommendation: keep the visually important subject in the RIGHT half of the image — the left half is covered by the mod title and the PLAY button, with a dark-to-transparent gradient on top for text legibility. The launcher stretches the image to fill the dashboard panel. For multiple rotating heroes, use heroImages instead."
     },
     "heroImages": {
       "type": "array",
       "maxItems": 6,
-      "description": "Optional gallery of dashboard hero backgrounds that ROTATE with a crossfade (auto, ~7 s each) when 2 or more are listed. Bare filenames in the same folder as mod.json. Each image has the SAME spec as heroImage (16:9, width 1920-3840 px, PNG/JPG, <= 8 MB each). If both heroImage and heroImages are present, heroImages takes precedence on the dashboard.",
+      "description": "Optional gallery of dashboard hero backgrounds that ROTATE with a crossfade (auto, ~7 s each) when 2 or more are listed. Bare filenames in the same folder as mod.json. Each image has the SAME spec as heroImage (16:9, width 1920-3840 px, PNG/JPG, <= 5 MB each). If both heroImage and heroImages are present, heroImages takes precedence on the dashboard.",
       "items": {
         "type": "string",
         "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg)$"
@@ -67,7 +67,7 @@
     "screenshots": {
       "type": "array",
       "maxItems": 8,
-      "description": "Optional gallery of screenshots/GIFs shown in the Workshop detail panel (thumbnail strip + large viewer). Bare filenames in the same folder as mod.json (no subfolders). Animated GIFs are allowed HERE ONLY (not in banner/heroImage). No fixed dimensions; each file <= 8 MB. For auto-merge to apply, use the fixed naming convention screenshot1..screenshot8 (any other name still validates against this schema but lands in tier3 / manual review).",
+      "description": "Optional gallery of screenshots/GIFs shown in the Workshop detail panel (thumbnail strip + large viewer). Bare filenames in the same folder as mod.json (no subfolders). Animated GIFs are allowed HERE ONLY (not in banner/heroImage). No fixed dimensions; each file <= 5 MB. For auto-merge to apply, use the fixed naming convention screenshot1..screenshot8 (any other name still validates against this schema but lands in tier3 / manual review).",
       "items": {
         "type": "string",
         "pattern": "^[a-zA-Z0-9_-]+\\.(png|jpg|jpeg|gif)$"

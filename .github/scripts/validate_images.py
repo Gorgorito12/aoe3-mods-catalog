@@ -24,7 +24,7 @@ Specs (kept here as the single source of truth — keep CONTRIBUTING.md in sync)
   heroImages[]        (OPTIONAL — rotating dashboard heroes; each same spec)
     - PNG or JPEG
     - 16:9 aspect, width 1920-3840 px (1080p up to 4K)
-    - <= 8 MB on disk each
+    - <= 5 MB on disk each
     - Use case: large background image painted behind the title + PLAY button
       on the launcher's dashboard panel. When "heroImages" lists 2+, the
       dashboard rotates through them with a crossfade.
@@ -34,7 +34,7 @@ Specs (kept here as the single source of truth — keep CONTRIBUTING.md in sync)
   screenshots[]   (OPTIONAL — gallery shown in the Workshop detail panel)
     - PNG, JPEG or GIF (animated GIFs allowed HERE ONLY)
     - NO fixed dimensions (captures vary)
-    - <= 8 MB on disk each
+    - <= 5 MB on disk each
     - The declared extension must match the actual format (a .gif file must
       really be a GIF, etc.)
 
@@ -55,10 +55,10 @@ from PIL import Image
 # (target_aspect, min_width, max_width, aspect_tolerance, max_bytes, formats, needs_alpha)
 ICON_SPEC = (1.0, 256, 1024, 0.02, 1 * 1024 * 1024, {"PNG"}, True)
 BANNER_SPEC = (4.0, 1200, 4800, 0.03, 2 * 1024 * 1024, {"PNG", "JPEG"}, False)
-HERO_SPEC = (16 / 9, 1920, 3840, 0.03, 8 * 1024 * 1024, {"PNG", "JPEG"}, False)
+HERO_SPEC = (16 / 9, 1920, 3840, 0.03, 5 * 1024 * 1024, {"PNG", "JPEG"}, False)
 
 # Screenshots have NO fixed dimensions; only a size cap + format check.
-SCREENSHOT_MAX_BYTES = 8 * 1024 * 1024
+SCREENSHOT_MAX_BYTES = 5 * 1024 * 1024
 SCREENSHOT_FORMATS = {"PNG", "JPEG", "GIF"}
 
 # Rotating-hero gallery cap (must match the launcher's MaxHeroes).
