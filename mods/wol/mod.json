@@ -33,6 +33,7 @@
   },
   "translations": {
     "repo": "papillo12/translations",
+    "folderRepo": "Gorgorito12/translations",
     "coveredFiles": [
       "data\\stringtabley.xml",
       "data\\unithelpstringsy.xml"
