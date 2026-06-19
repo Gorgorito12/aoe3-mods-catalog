@@ -35,11 +35,11 @@
       "maxLength": 100
     },
     "officialWebsite": {
-  "type": "string",
-  "format": "uri",
-  "pattern": "^https?://",
-  "description": "Public website / homepage. HTTP is permitted for legacy mod sites that don't have HTTPS yet (e.g. http://aoe3wol.com); HTTPS is preferred for new submissions. This field is informational only — the launcher just opens it in the user's browser."
-},
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://",
+      "description": "Public website / homepage. HTTP is permitted for legacy mod sites that don't have HTTPS yet (e.g. http://aoe3wol.com); HTTPS is preferred for new submissions. This field is informational only — the launcher just opens it in the user's browser."
+    },
     "icon": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9_-]+\\.png$",
@@ -86,6 +86,19 @@
       "pattern": "^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$",
       "description": "owner/repo of the mod's own GitHub repository (used by the Pin to Release Tag flow)."
     },
+    "installProductGuid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Optional. Stable Add/Remove Programs registry subkey. The launcher uses this exact string under HKLM\\…\\Uninstall\\<here>. When omitted the launcher derives `<id>_launcher`."
+    },
+    "userDataFolder": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[^\\\\/]+$",
+      "description": "Optional. Folder name (relative to Documents\\My Games\\) where this mod keeps its user-side data — saves, custom metropolises, replays, etc. When set, the launcher offers a backup-before-install prompt and exposes 'Open / Create backup / Restore backup' in the gear menu. Omit to opt out of the user-data feature entirely (e.g. overlay mods that share AoE3 vanilla's folder)."
+    },
     "approvedReleaseTag": {
       "type": "string",
       "description": "Tag in sourceRepo whose contents the launcher will load. Bumping this is a Tier 2 change (auto-merge if validation passes)."
@@ -107,6 +120,10 @@
         "probeFile": {
           "type": "string",
           "description": "Relative path the launcher checks to confirm the mod is installed at a given location."
+        },
+        "marker": {
+          "type": "string",
+          "description": "Optional. Relative path (file or directory) unique to the mod and absent from the base game it clones/overlays. When set, the launcher detects the mod by content in a folder with ANY name and uses it to tell a real install apart from vanilla AoE3. Only needed when probeFile is shared with the base game (e.g. a patched data\\ file)."
         },
         "executable": {
           "type": "string",
@@ -141,7 +158,7 @@
         "mechanism": {
           "type": "string",
           "enum": ["WolPatcher", "DelegatedExternal", "GitHubReleases", "Manual"],
-          "description": "WolPatcher = UpdateInfo.xml + .tar.xz patches. DelegatedExternal = mod has its own external patcher; launcher only plays. GitHubReleases = updates ship as GitHub Releases on the mod's own repo."
+          "description": "WolPatcher = UpdateInfo.xml + .tar.xz patches. DelegatedExternal = mod has its own external patcher; launcher only plays. GitHubReleases = updates ship as GitHub Releases on the mod's own repo. Manual = the launcher lists the mod but doesn't try to update it (used for demos, prototypes, or mods whose update story isn't decided yet)."
         },
         "wol": {
           "type": "object",
@@ -172,6 +189,26 @@
                 "pattern": "^[a-fA-F0-9]{64}$"
               }
             }
+          }
+        },
+        "github": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "GitHubReleases-specific settings. Used when a modder wants the release tag to remain the version marker but hosts the actual payload OUTSIDE of GitHub Releases (their own CDN, S3, archive.org, etc.). The GitHub release itself can be empty — only the tag matters. Any change to this object is Tier 3 (manual review) because update.* is in TIER_3_FIELDS; this is by design — letting CDN swaps auto-merge would defeat the catalog gatekeeping.",
+          "properties": {
+            "externalAssetUrlTemplate": {
+              "type": "string",
+              "pattern": "^https://",
+              "description": "URL template (HTTPS only). The literal substring '{tag}' is replaced at download time with the value of the top-level 'approvedReleaseTag'. Example: 'https://my-cdn.com/napoleonic-{tag}.zip' with tag 'v1.5' resolves to 'https://my-cdn.com/napoleonic-v1.5.zip'. When omitted, the launcher falls back to picking the asset attached to the GitHub release itself (default GitHubReleases behaviour)."
+            },
+            "externalAssetSha256": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$",
+              "description": "Expected SHA-256 (lowercase hex) of the file served by externalAssetUrlTemplate. REQUIRED whenever externalAssetUrlTemplate is set — the launcher refuses to install when an external URL is configured without a hash, because the host is no longer under GitHub's authenticity boundary."
+            }
+          },
+          "dependentRequired": {
+            "externalAssetUrlTemplate": ["externalAssetSha256"]
           }
         }
       }
