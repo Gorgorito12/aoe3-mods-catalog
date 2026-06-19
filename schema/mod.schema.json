@@ -183,7 +183,12 @@
         "repo": {
           "type": "string",
           "pattern": "^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$",
-          "description": "owner/repo where community translations live (one release per translation, with a translation.json + .zip)."
+          "description": "owner/repo whose RELEASES host translation packs (legacy path: one release per translation, with a translation.json + .zip)."
+        },
+        "folderRepo": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+$",
+          "description": "owner/repo hosting translations as FILES on main under translations/<id>/ (the new path: just commit translation.json + the .zip). The launcher reads both this folder and 'repo' releases (dual mode); folder packs win on id collision."
         },
         "coveredFiles": {
           "type": "array",
