@@ -25,9 +25,9 @@
       "updateInfoUrl": "http://aoe3wol.com/updates/UpdateInfo.xml",
       "updateInfoUrlAlt": "http://master.dl.sourceforge.net/project/wars-of-liberty/Patches/UpdateInfo.xml",
       "payloadZipUrls": [
-        "https://github.com/papillo12/Updater/releases/download/1.2.0d/WolPayload.zip.001",
-        "https://github.com/papillo12/Updater/releases/download/1.2.0d/WolPayload.zip.002",
-        "https://github.com/papillo12/Updater/releases/download/1.2.0d/WolPayload.zip.003"
+        "https://github.com/papillo12/Updater/releases/download/updater/WolPayload.zip.001",
+        "https://github.com/papillo12/Updater/releases/download/updater/WolPayload.zip.002",
+        "https://github.com/papillo12/Updater/releases/download/updater/WolPayload.zip.003"
       ]
     }
   },
