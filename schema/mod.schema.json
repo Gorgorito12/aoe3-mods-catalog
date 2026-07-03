@@ -205,6 +205,10 @@
               "type": "string",
               "pattern": "^[a-fA-F0-9]{64}$",
               "description": "Expected SHA-256 (lowercase hex) of the file served by externalAssetUrlTemplate. REQUIRED whenever externalAssetUrlTemplate is set — the launcher refuses to install when an external URL is configured without a hash, because the host is no longer under GitHub's authenticity boundary."
+            },
+            "deltaPatches": {
+              "type": "boolean",
+              "description": "Opt-in incremental delta patches. When true, on a normal update FROM the immediately-previous version the launcher looks on the approved release for a small 'patch-<from>-to-<to>.zip' + '.json' (generated with the launcher's Settings -> Packager -> Generate patch tool) and applies only the changed files instead of re-downloading the full overlay. Best-effort with a guaranteed full fallback (fresh install, version skip, hash mismatch, network error -> full download). Ignored for external-hosted mods (externalAssetUrlTemplate), whose SHA is catalog-pinned. The patch assets live on the modder's GitHub Release, NOT in this catalog. See docs/MODDING.md."
             }
           },
           "dependentRequired": {
