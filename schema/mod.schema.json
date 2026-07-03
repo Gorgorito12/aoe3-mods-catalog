@@ -209,6 +209,10 @@
             "deltaPatches": {
               "type": "boolean",
               "description": "Opt-in incremental delta patches. When true, on a normal update FROM the immediately-previous version the launcher looks on the approved release for a small 'patch-<from>-to-<to>.zip' + '.json' (generated with the launcher's Settings -> Packager -> Generate patch tool) and applies only the changed files instead of re-downloading the full overlay. Best-effort with a guaranteed full fallback (fresh install, version skip, hash mismatch, network error -> full download). Ignored for external-hosted mods (externalAssetUrlTemplate), whose SHA is catalog-pinned. The patch assets live on the modder's GitHub Release, NOT in this catalog. See docs/MODDING.md."
+            },
+            "followLatest": {
+              "type": "boolean",
+              "description": "Opt-in. When true, the launcher resolves the mod's latest version from GET /repos/{sourceRepo}/releases/latest (GitHub excludes drafts and prereleases from that endpoint, so a prerelease is never auto-published to users) and updates to it WITHOUT a catalog PR per release. The top-level 'approvedReleaseTag' is STILL REQUIRED: it seeds a first install with no cached state and is the fallback whenever the GitHub API is unreachable. Ignored when externalAssetUrlTemplate is set (the catalog-pinned SHA-256 only covers the approved tag, so other tags can't be verified). Trade-off a mod accepts by opting in: releases skip the per-version catalog approval gate — the opt-in itself is Tier 3 (like everything under update.*), reviewed once."
             }
           },
           "dependentRequired": {

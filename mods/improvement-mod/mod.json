@@ -21,6 +21,9 @@
     "arguments": ""
   },
   "update": {
-    "mechanism": "GitHubReleases"
+    "mechanism": "GitHubReleases",
+    "github": {
+      "followLatest": true
+    }
   }
 }
