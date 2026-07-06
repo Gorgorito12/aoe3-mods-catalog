@@ -1,30 +1,45 @@
 """
-Classify a pull request's changes into tier1 / tier2 / tier3 / invalid.
+Classify a pull request's changes into an OUTCOME the auto-merge workflow acts on.
 
-Tier semantics (set in stone — auto-merge logic depends on this):
+Two questions decide the outcome: WHAT changed (the field tiers below) and WHO is
+making the change (per-mod ownership). Ownership is the security boundary that
+scopes auto-merge to a mod's own maintainers.
 
-  tier1  -> Cosmetic changes only. Auto-merge after schema + image validation.
-            Examples: displayName, subtitle, description, accentColor, icon.png,
-            banner.png. The user-visible parts of the mod, but nothing that
-            changes what the launcher executes or downloads.
+Field tiers (what changed):
 
-  tier2  -> approvedReleaseTag bump and nothing else of substance. Auto-merge
-            after extra checks (the new tag exists, its mod.json still passes
-            schema, etc.).
+  tier1  -> Cosmetic fields only (displayName, description, accentColor, icon,
+            banner, hero, screenshots, ...). The user-visible parts of a mod.
+  tier2  -> approvedReleaseTag bump and nothing else of substance.
+  tier3  -> Critical fields (install.*, update.*, sourceRepo, id, translations,
+            maintainers): what the launcher downloads/executes, or who owns the
+            mod. MUST NOT auto-merge from a non-owner.
 
-  tier3  -> Critical changes. Manual review required by a maintainer; the
-            workflow only labels the PR and comments — no auto-merge.
-            Examples: install.* fields, update.* URLs, sourceRepo change,
-            id change, or any net-new mod submission.
+Ownership (who is changing it):
 
-  invalid -> Structural problems with the PR itself: files outside /mods/, more
-             than one mod folder touched, malformed JSON. The workflow blocks
-             the PR with an explanatory comment.
+  A mod's `maintainers` array (GitHub logins, read from the BASE manifest — never
+  the PR's own copy) plus the repo-wide REPO_MAINTAINERS list decide authority.
+  An authorized author has FULL autonomy over THEIR mod folder — every field,
+  including install/update — auto-merges (still gated by schema + image
+  validation downstream). This is a deliberate trust grant the repo owner makes
+  per mod by adding a login to that mod's `maintainers` (itself a reviewed
+  change). A non-owner can NOT auto-merge cosmetic changes to a mod they don't
+  own (that path is blocked).
 
-The workflow consumes the four output values written to GITHUB_OUTPUT:
-  tier=<tier1|tier2|tier3|invalid>
-  mod_id=<the single mod folder touched, or empty if invalid>
-  reason=<short human-readable explanation>
+Outcomes written to GITHUB_OUTPUT as `tier` (the workflow keys off these):
+
+  owner        -> Change by an authorized maintainer of this mod (or a repo
+                  maintainer). Auto-merge after validation, regardless of field.
+  tier3        -> Manual review by a maintainer: a first-time mod submission, an
+                  unrecognised file, or a NON-owner proposing a critical/unknown
+                  field change. Labelled, never auto-merged.
+  unauthorized -> A non-owner trying to change a mod's cosmetic/release fields.
+                  The script exits non-zero so the required "Classify" check
+                  fails and branch protection blocks the merge for everyone.
+  invalid      -> Structural problems (files outside a single mods/<id>/, multiple
+                  mods, no files). Blocked with an explanatory comment.
+
+The other three GITHUB_OUTPUT values are `mod_id`, `reason`, and the process exit
+code (0 for every outcome except `unauthorized`, which is 1).
 """
 
 from __future__ import annotations
@@ -37,7 +52,7 @@ from pathlib import Path
 
 # -------- Field categories ---------------------------------------------------
 
-# Cosmetic-only fields. Changes to these are tier 1.
+# Cosmetic-only fields. Changes to these (from an owner) are cosmetic.
 TIER_1_FIELDS = {
     "displayName",
     "subtitle",
@@ -51,31 +66,37 @@ TIER_1_FIELDS = {
     "screenshots",
 }
 
-# Release-pin fields. Changes to ONLY these are tier 2 (auto-merge with extra
-# verification that the tag exists and its contents are still valid).
+# Release-pin field. A change to ONLY this is a version bump.
 TIER_2_FIELDS = {"approvedReleaseTag"}
 
-# Critical fields. Any change here forces tier 3 (manual review).
-# These control what the launcher downloads and executes — they MUST NOT
-# auto-merge under any circumstance.
+# Critical fields. These control what the launcher downloads and executes, or WHO
+# owns the mod (`maintainers`). A non-owner changing any of these needs manual
+# review; they MUST NOT auto-merge from a non-owner under any circumstance.
 TIER_3_FIELDS = {
     "id",
     "sourceRepo",
     "install",
     "update",
     "translations",
+    "maintainers",
 }
 
-# Files allowed inside a mod folder. Anything else is suspicious enough to
-# force manual review.
+# GitHub logins (lowercased) with repo-wide authority over EVERY mod. The repo
+# owner(s). A login here is authorized for any mod folder, in addition to each
+# mod's own `maintainers` list.
+REPO_MAINTAINERS = {"gorgorito12"}
+
+# Files allowed inside a mod folder. Anything else is suspicious enough to force
+# manual review (kept even for owners — adding an unrecognised file isn't
+# "editing your mod", it's a safety-net escalation).
 ALLOWED_ASSETS = {
     "icon.png",
     "banner.png", "banner.jpg", "banner.jpeg",
     "hero.png", "hero.jpg", "hero.jpeg",
     "mod.json",
     # Gallery screenshots use a FIXED naming convention (screenshot1..screenshot8)
-    # so that asset-only screenshot PRs can auto-merge (tier1). Any other filename
-    # falls through to tier3 (manual review) — a safe default for a security gate.
+    # so that asset-only screenshot PRs can auto-merge. Any other filename falls
+    # through to tier3 (manual review) — a safe default for a security gate.
     *(f"screenshot{i}.{ext}"
       for i in range(1, 9)
       for ext in ("png", "jpg", "jpeg", "gif")),
@@ -86,7 +107,7 @@ ALLOWED_ASSETS = {
 
 
 def write_output(tier: str, mod_id: str, reason: str) -> None:
-    """Emit GitHub Actions outputs and exit cleanly."""
+    """Emit GitHub Actions outputs."""
     print(f"::notice::tier={tier} mod_id={mod_id} reason={reason}")
     out_path = os.environ.get("GITHUB_OUTPUT")
     if out_path:
@@ -128,12 +149,49 @@ def diff_keys(old: dict, new: dict) -> set[str]:
     return changed
 
 
+def normalize_login(login: str | None) -> str:
+    """GitHub logins are case-insensitive; compare lowercased + trimmed."""
+    return (login or "").strip().lower()
+
+
+def read_maintainers(mod_json_text: str | None) -> set[str]:
+    """
+    Parse a mod.json's `maintainers` array into a set of lowercased logins.
+    Robust to a missing field or malformed JSON (returns an empty set → the
+    authorization check fails closed, so only REPO_MAINTAINERS are trusted).
+    """
+    if not mod_json_text:
+        return set()
+    try:
+        data = json.loads(mod_json_text)
+    except json.JSONDecodeError:
+        return set()
+    result: set[str] = set()
+    for m in data.get("maintainers", []) or []:
+        if isinstance(m, str):
+            result.add(normalize_login(m))
+    return result
+
+
+def is_authorized(pr_author: str, base_maintainers: set[str]) -> bool:
+    """
+    True if the PR author may auto-merge changes to this mod: they're a repo-wide
+    maintainer, or listed in the mod's own (BASE) maintainers. Fail-closed on an
+    empty/unknown author.
+    """
+    author = normalize_login(pr_author)
+    if not author:
+        return False
+    return author in REPO_MAINTAINERS or author in base_maintainers
+
+
 # -------- Main classification ------------------------------------------------
 
 
 def main() -> int:
     base_ref = os.environ["BASE_REF"]
     head_sha = os.environ["HEAD_SHA"]
+    pr_author = os.environ.get("PR_AUTHOR", "")
 
     files = changed_files(base_ref, head_sha)
     if not files:
@@ -167,6 +225,7 @@ def main() -> int:
     mod_id = next(iter(mod_folders))
 
     # Constraint 2: only known asset filenames are allowed inside the mod folder.
+    # Kept as a tier3 safety net even for owners.
     for f in files:
         if f.name not in ALLOWED_ASSETS:
             write_output(
@@ -178,25 +237,51 @@ def main() -> int:
             )
             return 0
 
-    # If the mod.json itself wasn't changed, the PR is asset-only — tier 1.
     mod_json_path = f"mods/{mod_id}/mod.json"
-    json_was_touched = any(str(f) == mod_json_path for f in files)
+    # Compare as POSIX so the check is separator-agnostic (git emits forward
+    # slashes; Path.str() would use backslashes on Windows).
+    json_was_touched = any(f.as_posix() == mod_json_path for f in files)
 
+    # Ownership: read the mod's maintainers from the BASE manifest (the state on
+    # the target branch), NEVER the PR's own copy — a PR must not be able to
+    # authorize itself by adding its author to `maintainers` (that change is a
+    # tier3 field and, from a non-owner, lands in manual review below).
+    base_text = file_at_revision(f"origin/{base_ref}", mod_json_path)
+    base_maintainers = read_maintainers(base_text)
+    authorized = is_authorized(pr_author, base_maintainers)
+
+    # --- Asset-only PR (mod.json untouched) ---
     if not json_was_touched:
+        if base_text is None:
+            # Assets for a mod with no manifest on the base branch — odd; review.
+            write_output(
+                "tier3",
+                mod_id,
+                f"Assets for '{mod_id}' but no mod.json on the base branch — manual review.",
+            )
+            return 0
+        if authorized:
+            write_output(
+                "owner",
+                mod_id,
+                f"Owner asset-only change to '{mod_id}'.",
+            )
+            return 0
         write_output(
-            "tier1",
+            "unauthorized",
             mod_id,
-            "Asset-only changes (icon and/or banner). Manifest unchanged.",
+            f"@{pr_author} is not a maintainer of '{mod_id}', so cannot change its assets.",
         )
-        return 0
+        return 1
 
-    # The mod.json was touched — diff its content to decide tier 1/2/3.
-    old_text = file_at_revision(f"origin/{base_ref}", mod_json_path)
+    # --- mod.json touched ---
     new_text = Path(mod_json_path).read_text(encoding="utf-8")
 
-    if old_text is None:
-        # Brand-new mod submission. Always tier 3 (the maintainer must vet
-        # any first-time submission, regardless of what the manifest says).
+    if base_text is None:
+        # Brand-new mod submission.
+        if normalize_login(pr_author) in REPO_MAINTAINERS:
+            write_output("owner", mod_id, "New mod added by a repo maintainer.")
+            return 0
         write_output(
             "tier3",
             mod_id,
@@ -205,57 +290,50 @@ def main() -> int:
         return 0
 
     try:
-        old_json = json.loads(old_text)
+        old_json = json.loads(base_text)
         new_json = json.loads(new_text)
     except json.JSONDecodeError as e:
         write_output("tier3", mod_id, f"Invalid JSON in mod.json: {e}")
         return 0
 
-    # Compare top-level keys.
     changed = diff_keys(old_json, new_json)
 
-    # tier3 trumps everything: any critical field change demands manual review.
+    # Authorized owner: FULL autonomy over their own folder — any field, including
+    # install/update. Still gated by schema + image validation downstream, so a
+    # malformed manifest or an out-of-spec image can't merge.
+    if authorized:
+        fields = sorted(changed) or ["<no field change>"]
+        write_output(
+            "owner",
+            mod_id,
+            f"Owner change to '{mod_id}'. Fields: {fields}.",
+        )
+        return 0
+
+    # --- Not authorized (the PR author does not own this mod) ---
     critical_changed = changed & TIER_3_FIELDS
-    if critical_changed:
-        write_output(
-            "tier3",
-            mod_id,
-            f"Critical fields changed: {sorted(critical_changed)}",
-        )
-        return 0
-
-    # tier2: only the release tag bumped (and nothing else of substance).
-    # Any field that is neither tier1 nor tier2 falling here would be a
-    # schema-allowed-but-unrecognised key — escalate to tier3 conservatively.
     unrecognised = changed - TIER_1_FIELDS - TIER_2_FIELDS
-    if unrecognised:
+    if critical_changed or unrecognised:
+        # A substantive proposal from a non-owner — a maintainer decides. Not a
+        # hard block: it might be a legitimate community fix.
+        detail = sorted(critical_changed) or sorted(unrecognised)
         write_output(
             "tier3",
             mod_id,
-            f"Unrecognised field changes: {sorted(unrecognised)}. "
-            "Update classify_pr.py if this is a new field.",
+            f"@{pr_author} is not a maintainer of '{mod_id}'; "
+            f"critical/unknown fields {detail} need manual review.",
         )
         return 0
 
-    if changed & TIER_2_FIELDS:
-        # tier2 — approvedReleaseTag changed. May also have tier1 cosmetic
-        # changes alongside, that's fine.
-        old_tag = old_json.get("approvedReleaseTag")
-        new_tag = new_json.get("approvedReleaseTag")
-        write_output(
-            "tier2",
-            mod_id,
-            f"Release tag bumped: {old_tag!r} -> {new_tag!r}",
-        )
-        return 0
-
-    # Otherwise: only tier1 fields changed.
+    # Only cosmetic/release fields changed, but from a non-owner → block. Nobody
+    # edits someone else's mod's look & feel without being one of its maintainers.
     write_output(
-        "tier1",
+        "unauthorized",
         mod_id,
-        f"Cosmetic changes only: {sorted(changed)}",
+        f"@{pr_author} is not a maintainer of '{mod_id}'. "
+        f"Only its maintainers can change it — ask a maintainer to add you.",
     )
-    return 0
+    return 1
 
 
 if __name__ == "__main__":

@@ -31,17 +31,41 @@ BASE_REF=main HEAD_SHA=$(git rev-parse HEAD) python .github/scripts/classify_pr.
 
 The entire repo exists to let cosmetic and version-bump PRs merge themselves while forcing a human to review anything dangerous. The pipeline is in `.github/workflows/auto-merge.yml`: **classify → validate → (block | auto_merge | request_review)**.
 
-`classify_pr.py` is the brain. It diffs the PR against the base and emits a `tier` to `GITHUB_OUTPUT`:
+`classify_pr.py` is the brain. It diffs the PR against the base, factors in **who** the author is
+(per-mod ownership), and emits an outcome to `GITHUB_OUTPUT` as `tier`:
 
-- **invalid** — touched files outside a single `mods/<id>/` folder, multiple mods at once, or an unrecognised filename → workflow comments and exits 1, branch protection blocks the merge.
-- **tier1** — only cosmetic top-level fields changed (`TIER_1_FIELDS`), or assets-only with `mod.json` untouched → auto-merge after validation.
-- **tier2** — only `approvedReleaseTag` bumped (`TIER_2_FIELDS`), possibly alongside tier1 fields → auto-merge after validation.
-- **tier3** — any critical field changed (`TIER_3_FIELDS`: `id`, `sourceRepo`, `install`, `update`, `translations`), an unknown file in the folder, **or any first-time mod submission** → labelled `needs-manual-review`, no auto-merge.
+- **owner** — the PR author is a maintainer of the touched mod (its `maintainers` array) OR a
+  repo-wide maintainer (`REPO_MAINTAINERS`). Auto-merge after validation, **for any field, including
+  `install`/`update`** — an owner has full autonomy over their folder (deliberate trust grant).
+- **tier3** — a first-time mod submission, an unrecognised file, or a **non-owner** proposing a
+  critical/unknown-field change → labelled `needs-manual-review`, no auto-merge.
+- **unauthorized** — a **non-owner** changing a mod's cosmetic/release fields → the script `exit 1`s
+  so the required `classify` check fails and branch protection blocks the merge (fork or
+  collaborator). A best-effort comment explains it.
+- **invalid** — touched files outside a single `mods/<id>/` folder, multiple mods at once, or no
+  files → workflow comments and exits, branch protection blocks the merge.
+
+The **field tiers** (`TIER_1/2/3_FIELDS`) still exist but now only decide a **non-owner's** outcome
+(cosmetic/release → `unauthorized`; critical/unknown → `tier3`). An owner bypasses them.
+
+Ownership rules that are load-bearing:
+- `maintainers` is read from the **BASE** manifest (`git show origin/<base>:…`), never the PR's copy,
+  so a PR can't authorize itself. `maintainers` is in `TIER_3_FIELDS`, so a non-owner editing it lands
+  in manual review — nobody self-grants ownership.
+- The `unauthorized` block is guaranteed by `classify` exiting non-zero (that job is a required
+  check); the pre-existing `invalid`→`block` path is left as-is and NOT used for the ownership gate.
+- The workflow **pins `classify_pr.py` to the base ref** (`git checkout origin/<base> -- …`) before
+  running it, so a fork can't rewrite the classifier to bypass the ownership check. It also passes
+  `PR_AUTHOR=${{ github.event.pull_request.user.login }}`.
+- **Accepted risk:** owner autonomy covers download URLs / executable. A trusted-but-compromised
+  maintainer can auto-publish what runs on their mod's users' machines. Add `maintainers` only for
+  people trusted with that mod.
 
 Classification rules that are easy to get wrong:
 - The workflow **enables** auto-merge (`gh pr merge --auto`); it never approves. Merges happen because branch protection requires the status checks to be green. Required approvals must be 0 (see README setup) — `GITHUB_TOKEN` cannot approve PRs by design.
-- Comparison is on **top-level JSON keys only** (`diff_keys`). A nested change inside `install` or `update` registers as that whole key changing → tier3, which is the intended safe behaviour.
-- Any schema-valid field not listed in one of the three `TIER_*_FIELDS` sets falls through to tier3 (the conservative default).
+- Owner-fork auto-merge needs "Send write tokens to workflows from fork PRs" enabled (or the modder as a collaborator); otherwise `gh pr merge --auto` gets a read-only token on fork PRs and the owner's PR just waits. The ownership *block* works regardless.
+- Comparison is on **top-level JSON keys only** (`diff_keys`). A nested change inside `install` or `update` registers as that whole key changing → critical, which is the intended safe behaviour.
+- Any schema-valid field not listed in one of the three `TIER_*_FIELDS` sets falls through to the critical path for a non-owner (the conservative default).
 
 ### Adding or reclassifying a schema field
 
@@ -66,6 +90,11 @@ Dimensions are validated by **aspect ratio + a width range** (NOT a single exact
 ## Manifest conventions (`mod.json`)
 
 - `id` must match the folder name under `mods/` and the pattern `^[a-z][a-z0-9-]{1,30}$`.
+- `maintainers` (optional array of GitHub usernames) — the mod's owners. Governance-only: **the
+  launcher ignores it** (it's not consumed by `ModCatalogManifest`). It's the auto-merge ownership
+  gate (see the tier section): a listed author auto-merges any change to this mod; a non-owner is
+  blocked/reviewed. Read from the base manifest and itself a tier-3 change, so it can't be
+  self-granted. Add an author here when accepting their first submission.
 - `install.type`: `IsolatedFolder` (mod in its own cloned folder, e.g. WoL) vs `InPlaceOverlay` (files extracted over AoE3, e.g. Improvement Mod).
 - `update.mechanism`: `WolPatcher` (UpdateInfo.xml + patches), `DelegatedExternal` (mod's own patcher), `GitHubReleases`, or `Manual`.
 - `update.github.followLatest` (boolean, optional): opt-in for `GitHubReleases` mods to follow the repo's **newest stable release** (`GET /releases/latest` — drafts and prereleases are excluded by the endpoint) instead of pinning to `approvedReleaseTag`. The modder publishes a release and users get it with **no catalog PR per version**. `approvedReleaseTag` STAYS required: it seeds a first offline install and is the fallback when the GitHub API is unreachable. Ignored when `externalAssetUrlTemplate` is set (its pinned SHA-256 only covers the approved tag). It lives inside `update`, so enabling it is Tier 3 (reviewed once) — the trade-off is that subsequent releases skip the per-version approval gate, so only trusted mods should opt in. No `classify_pr.py` change needed: nested `update.*` edits already classify as tier3.

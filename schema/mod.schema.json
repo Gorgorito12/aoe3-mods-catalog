@@ -34,6 +34,15 @@
       "type": "string",
       "maxLength": 100
     },
+    "maintainers": {
+      "type": "array",
+      "maxItems": 20,
+      "description": "GitHub usernames allowed to land changes to THIS mod (any field, including install/update, plus assets) via auto-merge. Governance-only: the launcher IGNORES this field. Enforced by classify_pr.py, which reads it from the BASE manifest — a PR author not listed here (and not a repo-wide maintainer) is blocked from cosmetic/release auto-merge and sent to manual review for critical fields. Changing this list is itself a critical (tier3) change, so a non-owner cannot self-grant ownership. A mod's author is added here (by a repo maintainer) when their first submission is accepted.",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9-]{1,39}$"
+      }
+    },
     "officialWebsite": {
       "type": "string",
       "format": "uri",

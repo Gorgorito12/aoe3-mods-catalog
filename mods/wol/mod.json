@@ -5,6 +5,7 @@
   "subtitle": "Launcher",
   "accentColor": "#c8102e",
   "author": "Wars of Liberty Team",
+  "maintainers": ["Gorgorito12", "MastonJT"],
   "officialWebsite": "http://aoe3wol.com/",
   "icon": "icon.png",
   "heroImage": "hero.jpg",

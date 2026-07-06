@@ -5,6 +5,7 @@
   "subtitle": "DEMO — catalog test",
   "accentColor": "#9b59b6",
   "author": "papillo12",
+  "maintainers": ["Gorgorito12"],
   "officialWebsite": "https://github.com/papillo12/aoe3-mods-catalog",
   "heroImage": "hero.jpg",
   "description": {

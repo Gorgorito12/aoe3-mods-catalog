@@ -5,6 +5,7 @@
   "subtitle": "Original base game",
   "accentColor": "#caa14a",
   "author": "Ensemble Studios, Big Huge Games",
+  "maintainers": ["Gorgorito12"],
   "officialWebsite": "https://www.ageofempires.com/games/aoeiii/",
   "description": {
     "en": "The second expansion to Age of Empires III, by Ensemble Studios and Big Huge Games. The Asian Dynasties adds three Asian civilizations — Japanese, Chinese and Indians — that advance through the ages by raising Wonders, plus new campaigns, maps, the Consulate, and naval and trade additions. This is the unmodded base game: the launcher only detects and runs your own legally-owned copy, it never installs it.",

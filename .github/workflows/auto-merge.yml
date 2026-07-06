@@ -61,12 +61,44 @@ jobs:
         with:
           python-version: "3.11"
 
+      # Run the BASE branch's classifier, never the PR's own copy. On a fork PR
+      # the checked-out scripts come from the fork, so without this a malicious
+      # PR could rewrite classify_pr.py to declare itself authorized (or downgrade
+      # a critical change to auto-merge). The workflow YAML is always taken from
+      # base, but the scripts it invokes are not — pin them explicitly.
+      - name: Pin classifier to the base branch (don't trust the PR's copy)
+        run: git checkout "origin/${{ github.event.pull_request.base.ref }}" -- .github/scripts/classify_pr.py
+
       - name: Classify PR
         id: classify
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: python .github/scripts/classify_pr.py
+
+      # A non-owner tried to change a mod they don't maintain: the classifier
+      # exited non-zero, failing this required check so branch protection blocks
+      # the merge. Post a friendly explanation (best-effort; the token is
+      # read-only on fork PRs, so tolerate a failure).
+      - name: Explain ownership block
+        if: always() && steps.classify.outputs.tier == 'unauthorized'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REASON: ${{ steps.classify.outputs.reason }}
+        run: |
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$(
+            cat <<EOF
+          🔒 **This change is blocked — you are not a maintainer of this mod.**
+
+          $REASON
+
+          Only a mod's listed maintainers (its author) can change it. If you should
+          have access, ask a repo maintainer to add your GitHub username to that
+          mod's \`maintainers\` list in its \`mod.json\`.
+          EOF
+          )" || true
 
   # -- 2. Validate the manifest + assets (skipped if 'invalid') -------------
   validate:
@@ -138,9 +170,10 @@ jobs:
   auto_merge:
     name: Enable auto-merge
     needs: [classify, validate]
-    if: |
-      needs.classify.outputs.tier == 'tier1' ||
-      needs.classify.outputs.tier == 'tier2'
+    # 'owner' = a change by an authorized maintainer of this mod (or a repo
+    # maintainer), any field, after validation passed. Non-owner cosmetic changes
+    # never reach here — the classifier fails on 'unauthorized'.
+    if: needs.classify.outputs.tier == 'owner'
     runs-on: ubuntu-latest
     steps:
       - name: Turn on auto-merge
