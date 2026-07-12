@@ -141,6 +141,10 @@
         "arguments": {
           "type": "string"
         },
+        "userDataRedirect": {
+          "type": "boolean",
+          "description": "When true, the mod writes its saves/config to the SHARED vanilla 'My Games\\Age of Empires 3' folder (it does NOT ship a build that isolates itself like WoL / Improvement Mod). To give it an exclusive save folder the launcher junction-redirects the standard folder to the top-level 'userDataFolder' around launch, and restores the real vanilla folder for anything else / at next startup. Requires a non-empty top-level 'userDataFolder'. Default false."
+        },
         "payloadUrls": {
           "type": "array",
           "description": "Generic initial-install payload URLs, agnostic of the update mechanism. Used when the mod ships its files as one or more downloadable archives. For multi-part archives (e.g. .zip.001/.002/...) list every part in order; the launcher concatenates them before extracting.",
