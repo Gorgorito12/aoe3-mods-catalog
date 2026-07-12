@@ -1,0 +1,30 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "knights-and-barbarians",
+  "displayName": "Knights and Barbarians",
+  "subtitle": "Medieval total conversion",
+  "accentColor": "#8a5a2b",
+  "author": "papillo12",
+  "maintainers": ["Gorgorito12"],
+  "officialWebsite": "https://www.moddb.com/mods/knights-and-barbarians",
+  "description": {
+    "en": "A medieval total conversion for Age of Empires III: The Asian Dynasties — knights, barbarians and siege warfare on new random maps. The launcher clones your Age of Empires III install into a separate folder and overlays Knights and Barbarians on top, so your original game stays untouched. Runs on the game's own age3y.exe.",
+    "es": "Una conversión total medieval para Age of Empires III: The Asian Dynasties — caballeros, bárbaros y guerra de asedio en nuevos mapas aleatorios. El launcher clona tu instalación de Age of Empires III en una carpeta separada y aplica encima Knights and Barbarians, así tu juego original queda intacto. Se ejecuta con el propio age3y.exe del juego."
+  },
+  "sourceRepo": "papillo12/Knights-and-Barbarians",
+  "approvedReleaseTag": "v1.0.0",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\Knights and Barbarians",
+    "probeFile": "data\\stringtabley.xml",
+    "marker": "art\\3d_models",
+    "executable": "age3y.exe",
+    "arguments": ""
+  },
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "followLatest": true
+    }
+  }
+}
