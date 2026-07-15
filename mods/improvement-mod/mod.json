@@ -10,8 +10,8 @@
   "icon": "icon.png",
   "heroImage": "hero.png",
   "description": {
-    "en": "Overhaul mod for AoE3: The Asian Dynasties. The launcher clones your Age of Empires III install into a separate folder and overlays the latest Improvement Mod release on top — your original AoE3 stays untouched. After install, the in-game age3m.exe patcher handles further updates.",
-    "es": "Mod de mejora para AoE3: The Asian Dynasties. El launcher clona tu instalación de Age of Empires III en una carpeta separada y aplica encima la última release de Improvement Mod — tu AoE3 original queda intacto. Después de instalar, el parcher age3m.exe del propio mod maneja las actualizaciones posteriores."
+    "en": "Overhaul mod for AoE3: The Asian Dynasties. Rebalances the original civilizations and expands them with new units, technologies and maps, while keeping the feel of the base game. It ships its own age3m.exe patcher, which handles further updates.",
+    "es": "Mod de mejora para AoE3: The Asian Dynasties. Rebalancea las civilizaciones originales y las amplía con unidades, tecnologías y mapas nuevos, sin perder el espíritu del juego base. Trae su propio parcher age3m.exe, que maneja las actualizaciones posteriores."
   },
   "sourceRepo": "papillo12/Improvement-Mod",
   "approvedReleaseTag": "Improvement-Mod",
