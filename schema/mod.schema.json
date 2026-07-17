@@ -145,10 +145,6 @@
           "type": "boolean",
           "description": "When true, the mod writes its saves/config to the SHARED vanilla 'My Games\\Age of Empires 3' folder (it does NOT ship a build that isolates itself like WoL / Improvement Mod). To give it an exclusive save folder the launcher junction-redirects the standard folder to the top-level 'userDataFolder' around launch, and restores the real vanilla folder for anything else / at next startup. Requires a non-empty top-level 'userDataFolder'. Default false."
         },
-        "gameRootRedirect": {
-          "type": "boolean",
-          "description": "Default TRUE. The AoE3 engine resolves its game-data folder from the registry 'setuppath' value, NOT from the folder the .exe runs in. So a mod that ships the STOCK (unpatched) age3y.exe, installed to its own folder, would load the base game's data (you'd see plain Asian Dynasties). The launcher fixes this by pointing 'setuppath' at the mod's install folder right before launch (launching the base game restores it). Leave this true (or omit it) for any mod that ships the stock exe. Set to false ONLY if your mod ships a PATCHED / portable executable (like WoL's) that loads data from its own folder and you don't want the launcher touching the registry — true is harmless for portable exes (they ignore the value), so when in doubt, leave it true."
-        },
         "payloadUrls": {
           "type": "array",
           "description": "Generic initial-install payload URLs, agnostic of the update mechanism. Used when the mod ships its files as one or more downloadable archives. For multi-part archives (e.g. .zip.001/.002/...) list every part in order; the launcher concatenates them before extracting.",
