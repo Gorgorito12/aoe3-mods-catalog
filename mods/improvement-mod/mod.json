@@ -5,7 +5,7 @@
   "subtitle": "AoE3:TAD overhaul",
   "accentColor": "#3a8cd9",
   "author": "Improvement Mod Team",
-  "maintainers": ["Gorgorito12"],
+  "maintainers": ["Gorgorito12", "mandosrex"],
   "officialWebsite": "https://www.moddb.com/mods/improvement-mod",
   "icon": "icon.png",
   "heroImage": "hero.png",
@@ -13,8 +13,8 @@
     "en": "Overhaul mod for AoE3: The Asian Dynasties. Rebalances the original civilizations and expands them with new units, technologies and maps, while keeping the feel of the base game. It ships its own age3m.exe patcher, which handles further updates.",
     "es": "Mod de mejora para AoE3: The Asian Dynasties. Rebalancea las civilizaciones originales y las amplía con unidades, tecnologías y mapas nuevos, sin perder el espíritu del juego base. Trae su propio parcher age3m.exe, que maneja las actualizaciones posteriores."
   },
-  "sourceRepo": "papillo12/Improvement-Mod",
-  "approvedReleaseTag": "Improvement-Mod",
+  "sourceRepo": "mandosrex/AoE3ImpMod_New",
+  "approvedReleaseTag": "19.07.2026",
   "install": {
     "type": "IsolatedFolder",
     "defaultFolder": "C:\\Program Files (x86)\\Improvement Mod",
