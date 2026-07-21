@@ -6,7 +6,12 @@
   "accentColor": "#3a8cd9",
   "author": "Improvement Mod Team",
   "maintainers": ["Gorgorito12", "mandosrex"],
-  "officialWebsite": "https://www.moddb.com/mods/improvement-mod",
+  "officialWebsite": "https://impmod.blogspot.com/",
+  "links": [
+    { "type": "discord", "url": "https://discord.gg/WRvuVFg" },
+    { "type": "moddb", "url": "https://www.moddb.com/mods/improvement-mod" },
+    { "type": "video", "url": "https://www.youtube.com/channel/UCS1izyjNR9fmzdR660eDrfg" }
+  ],
   "icon": "icon.png",
   "heroImage": "hero.png",
   "description": {
