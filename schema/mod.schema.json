@@ -49,6 +49,35 @@
       "pattern": "^https?://",
       "description": "Public website / homepage. HTTP is permitted for legacy mod sites that don't have HTTPS yet (e.g. http://aoe3wol.com); HTTPS is preferred for new submissions. This field is informational only — the launcher just opens it in the user's browser."
     },
+    "links": {
+      "type": "array",
+      "maxItems": 4,
+      "description": "Optional community links (Discord invite, ModDB page, forum, wiki, videos) shown as a row of pills in the launcher's Workshop detail panel. Purely informational — the launcher only opens them in the user's browser, and it shows the FULL url in the button's tooltip so players can see where a link actually leads before clicking. Unlike 'officialWebsite' (whose HTTP allowance is legacy), these are HTTPS-only. A link that just repeats 'officialWebsite' is not rendered twice. Editing this array is a tier1 (cosmetic) change, so only the mod's own maintainers can auto-merge it.",
+      "items": {
+        "type": "object",
+        "required": ["type", "url"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["website", "discord", "moddb", "forum", "wiki", "video", "other"],
+            "description": "Kind of destination. Only picks the default caption and has no effect on what the launcher does — it never renders a brand logo (trademark)."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://",
+            "description": "HTTPS only."
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 24,
+            "pattern": "^[^\\u0000-\\u001F]+$",
+            "description": "Optional short caption. Omit to use the type's localized name (e.g. 'Discord', 'Foro'). Control characters are rejected."
+          }
+        }
+      }
+    },
     "icon": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9_-]+\\.png$",

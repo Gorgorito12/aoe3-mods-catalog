@@ -7,6 +7,11 @@
   "author": "Wars of Liberty Team",
   "maintainers": ["Gorgorito12", "MastonJT"],
   "officialWebsite": "http://aoe3wol.com/",
+  "links": [
+    { "type": "discord", "url": "https://discord.gg/ebBDucGpD5" },
+    { "type": "moddb", "url": "https://www.moddb.com/mods/wars-of-liberty" },
+    { "type": "video", "url": "https://www.youtube.com/@AoE3WoL" }
+  ],
   "icon": "icon.png",
   "heroImage": "hero.jpg",
   "description": {

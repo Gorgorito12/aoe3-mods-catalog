@@ -60,6 +60,10 @@ TIER_1_FIELDS = {
     "accentColor",
     "author",
     "officialWebsite",
+    # Community links (Discord / ModDB / forum / …). Cosmetic: the launcher only
+    # opens them in a browser. The ownership gate is what keeps them honest — a
+    # non-owner editing this array is blocked, same as any other tier1 field.
+    "links",
     "icon",
     "banner",
     "heroImage",
