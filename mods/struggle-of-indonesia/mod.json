@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "struggle-of-indonesia",
+  "displayName": "Struggle of Indonesia",
+  "subtitle": "AoE3:TAD total conversion",
+  "accentColor": "#CE1126",
+  "author": "SoI Team",
+  "maintainers": ["Gorgorito12"],
+  "officialWebsite": "https://www.moddb.com/mods/struggle-of-indonesia",
+  "icon": "icon.png",
+  "description": {
+    "en": "Total-conversion mod for AoE3: The Asian Dynasties, set in the colonial struggle over the Indonesian archipelago. Play as Johor, Madura or Priangan, each with their own units, buildings, home cities and technologies, and fight across new maps of the region alongside the reworked European powers.",
+    "es": "Mod de conversión total para AoE3: The Asian Dynasties, ambientado en la lucha colonial por el archipiélago indonesio. Juega como Johor, Madura o Priangan, cada una con sus propias unidades, edificios, metrópolis y tecnologías, y pelea en mapas nuevos de la región junto a las potencias europeas rediseñadas."
+  },
+  "userDataFolder": "Struggle of Indonesia",
+  "sourceRepo": "papillo12/Struggle-of-Indonesia",
+  "approvedReleaseTag": "1.0.0",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\Struggle of Indonesia",
+    "probeFile": "data\\stringtabley.xml",
+    "marker": "art\\buildings\\soi",
+    "executable": "age3y.exe",
+    "arguments": "",
+    "userDataRedirect": true,
+    "setupPathRedirect": true
+  },
+  "update": {
+    "mechanism": "GitHubReleases"
+  }
+}

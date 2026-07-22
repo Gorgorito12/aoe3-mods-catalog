@@ -180,6 +180,10 @@
           "type": "boolean",
           "description": "When true, the mod writes its saves/config to the SHARED vanilla 'My Games\\Age of Empires 3' folder (it does NOT ship a build that isolates itself like WoL / Improvement Mod). To give it an exclusive save folder the launcher junction-redirects the standard folder to the top-level 'userDataFolder' around launch, and restores the real vanilla folder for anything else / at next startup. Requires a non-empty top-level 'userDataFolder'. Default false."
         },
+        "setupPathRedirect": {
+          "type": "boolean",
+          "description": "When true, the mod ships the STOCK 'age3y.exe' (no UHC patch) and is a clone-into-its-own-folder total conversion, so the engine loads its content via the registry 'setuppath' (the real '...\\bin'), not the working directory — meaning an isolated clone would load VANILLA content instead of the mod. The launcher junctions the setuppath folder at this mod's install folder around launch and restores it afterwards. Only stock-exe replacement mods (e.g. Struggle of Indonesia) need it; UHC mods (WoL / Improvement Mod / ESOC) and additive-overlay mods (Napoleonic Era) do NOT. Default false."
+        },
         "payloadUrls": {
           "type": "array",
           "description": "Generic initial-install payload URLs, agnostic of the update mechanism. Used when the mod ships its files as one or more downloadable archives. For multi-part archives (e.g. .zip.001/.002/...) list every part in order; the launcher concatenates them before extracting.",
