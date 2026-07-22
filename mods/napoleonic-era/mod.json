@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "napoleonic-era",
+  "displayName": "Napoleonic Era",
+  "subtitle": "AoE3:TAD overhaul",
+  "accentColor": "#5a6b8c",
+  "author": "Napoleonic Era Team",
+  "maintainers": ["Gorgorito12", "papillo12"],
+  "icon": "icon.png",
+  "description": {
+    "en": "A total-conversion mod for Age of Empires III: The Asian Dynasties set in the Napoleonic Wars. It reworks the base game around the great powers of the late 18th and early 19th centuries, with new units, technologies, maps and mechanics built around line-infantry-and-artillery warfare of the period. It ships its own age3n.exe.",
+    "es": "Conversión total para Age of Empires III: The Asian Dynasties ambientada en las Guerras Napoleónicas. Rehace el juego base en torno a las grandes potencias de fines del siglo XVIII y comienzos del XIX, con unidades, tecnologías, mapas y mecánicas nuevas pensadas para la guerra de infantería en línea y artillería de la época. Trae su propio age3n.exe."
+  },
+  "sourceRepo": "papillo12/Napoleonic-Era",
+  "approvedReleaseTag": "1.0.0",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\Napoleonic Era",
+    "probeFile": "age3n.exe",
+    "executable": "age3n.exe",
+    "arguments": "",
+    "multiplayerProbeFiles": ["data\\proton.xml", "data\\techtreen.xml"]
+  },
+  "userDataFolder": "Napoleonic Era Beta 2",
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {}
+  }
+}

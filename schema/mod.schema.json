@@ -170,6 +170,12 @@
         "arguments": {
           "type": "string"
         },
+        "multiplayerProbeFiles": {
+          "type": "array",
+          "items": { "type": "string" },
+          "maxItems": 6,
+          "description": "Install-relative files that identify this mod's VERSION for the multiplayer join check. Declare ONLY for a mod that ships its own data files instead of overwriting the base 'y' files (data\\protoy.xml / techtreey.xml / stringtabley.xml) — e.g. Napoleonic Era's data\\proton.xml + data\\techtreen.xml. Omit for a normal overlay mod: the launcher default is correct. Getting this wrong lets two different versions share a match and desync, so it is a CRITICAL (manual-review) field, never cosmetic."
+        },
         "userDataRedirect": {
           "type": "boolean",
           "description": "When true, the mod writes its saves/config to the SHARED vanilla 'My Games\\Age of Empires 3' folder (it does NOT ship a build that isolates itself like WoL / Improvement Mod). To give it an exclusive save folder the launcher junction-redirects the standard folder to the top-level 'userDataFolder' around launch, and restores the real vanilla folder for anything else / at next startup. Requires a non-empty top-level 'userDataFolder'. Default false."
