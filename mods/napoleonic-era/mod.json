@@ -8,8 +8,8 @@
   "maintainers": ["Gorgorito12", "papillo12"],
   "icon": "icon.png",
   "description": {
-    "en": "A total-conversion mod for Age of Empires III: The Asian Dynasties set in the Napoleonic Wars. It reworks the base game around the great powers of the late 18th and early 19th centuries, with new units, technologies, maps and mechanics built around line-infantry-and-artillery warfare of the period. It ships its own age3n.exe.",
-    "es": "Conversión total para Age of Empires III: The Asian Dynasties ambientada en las Guerras Napoleónicas. Rehace el juego base en torno a las grandes potencias de fines del siglo XVIII y comienzos del XIX, con unidades, tecnologías, mapas y mecánicas nuevas pensadas para la guerra de infantería en línea y artillería de la época. Trae su propio age3n.exe."
+    "en": "Total conversion covering 1555-1815, from pike-and-shot to Waterloo. Adds seven civilizations — Americans, Austrians, Italians, Poles, Prussians, Swedes and Swiss — and reworks the French and Germans, each with their own units, technologies, politicians and home cities. Over twenty new maps carry the fighting to the Alps, the Rhine, Malta, the Nile and the Barbary Coast, and a new University unlocks technologies of its own.",
+    "es": "Conversión total que abarca de 1555 a 1815, de la era de picas y arcabuces a Waterloo. Suma siete civilizaciones —Estados Unidos, Austria, Italia, Polonia, Prusia, Suecia y Suiza— y rehace Francia y Alemania, cada una con sus propias unidades, tecnologías, políticos y metrópolis. Más de veinte mapas nuevos llevan el combate a los Alpes, el Rin, Malta, el Nilo y la Costa de Berbería, y un edificio Universidad abre tecnologías propias."
   },
   "sourceRepo": "papillo12/Napoleonic-Era",
   "approvedReleaseTag": "2.1.7b",
