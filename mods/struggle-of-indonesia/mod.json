@@ -7,6 +7,11 @@
   "author": "SoI Team",
   "maintainers": ["Gorgorito12"],
   "officialWebsite": "https://www.moddb.com/mods/struggle-of-indonesia",
+  "links": [
+    { "type": "discord", "url": "https://discord.gg/QNnNBET" },
+    { "type": "other", "url": "https://www.facebook.com/StruggleofIndonesia", "label": "Facebook" },
+    { "type": "video", "url": "https://www.youtube.com/c/ageofempiresiiistruggleofindonesia", "label": "YouTube" }
+  ],
   "icon": "icon.png",
   "heroImage": "hero.png",
   "description": {
