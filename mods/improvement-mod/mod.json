@@ -15,8 +15,8 @@
   "icon": "icon.png",
   "heroImage": "hero.png",
   "description": {
-    "en": "Overhaul mod for AoE3: The Asian Dynasties. Rebalances the original civilizations and expands them with new units, technologies and maps, while keeping the feel of the base game. It ships its own age3m.exe patcher, which handles further updates.",
-    "es": "Mod de mejora para AoE3: The Asian Dynasties. Rebalancea las civilizaciones originales y las amplía con unidades, tecnologías y mapas nuevos, sin perder el espíritu del juego base. Trae su propio parcher age3m.exe, que maneja las actualizaciones posteriores."
+    "en": "A broad overhaul of The Asian Dynasties that keeps the original feel while rebuilding almost everything around it. Adds the Americans, Italians, Swedes and Berbers as playable civilizations — Colombians and Maltese are still in progress — and gives the existing ones new units, cards, technologies and game modes. Ships over a hundred random maps, upscaled textures, extra soundtracks and a considerably stronger AI.",
+    "es": "Revisión a fondo de The Asian Dynasties que conserva el espíritu original y rehace casi todo lo demás. Suma como civilizaciones jugables a Estados Unidos, Italia, Suecia y Berbería —Colombia y Malta siguen en desarrollo— y da a las ya existentes unidades, cartas, tecnologías y modos de juego nuevos. Trae más de cien mapas aleatorios, texturas reescaladas, bandas sonoras extra y una IA bastante más competente."
   },
   "sourceRepo": "mandosrex/AoE3ImpMod_New",
   "approvedReleaseTag": "19.07.2026",
