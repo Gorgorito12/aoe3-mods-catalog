@@ -14,7 +14,7 @@
   },
   "userDataFolder": "Struggle of Indonesia",
   "sourceRepo": "papillo12/Struggle-of-Indonesia",
-  "approvedReleaseTag": "1.0.0",
+  "approvedReleaseTag": "1.2",
   "install": {
     "type": "IsolatedFolder",
     "defaultFolder": "C:\\Program Files (x86)\\Struggle of Indonesia",
@@ -23,9 +23,12 @@
     "executable": "age3y.exe",
     "arguments": "",
     "userDataRedirect": true,
-    "setupPathRedirect": true
+    "privateSetupPath": true
   },
   "update": {
-    "mechanism": "GitHubReleases"
+    "mechanism": "GitHubReleases",
+    "github": {
+      "followLatest": true
+    }
   }
 }
