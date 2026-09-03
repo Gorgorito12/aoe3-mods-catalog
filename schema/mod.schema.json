@@ -161,7 +161,7 @@
         },
         "marker": {
           "type": "string",
-          "description": "Optional. Relative path (file or directory) unique to the mod and absent from the base game it clones/overlays. When set, the launcher detects the mod by content in a folder with ANY name and uses it to tell a real install apart from vanilla AoE3. Only needed when probeFile is shared with the base game (e.g. a patched data\\ file)."
+          "description": "Declare one. Relative path (file or directory) unique to the mod and absent from the base game it clones/overlays. The launcher detects the mod by content in a folder with ANY name, and this is what tells a real install apart from a folder that merely happens to hold probeFile. WARNING: a probe file being exclusive to your mod is NOT enough on its own. An IsolatedFolder install is a clone of the player's AoE3 folder, so a stray leftover of your own executable sitting in that folder is copied into EVERY mod folder on the machine — Napoleonic Era declared probe age3n.exe with no marker, and one orphan copy made every cloned mod folder read as a Napoleonic Era install. Prefer a data file your mod ships (e.g. data\\myproto.xml) over the executable."
         },
         "executable": {
           "type": "string",

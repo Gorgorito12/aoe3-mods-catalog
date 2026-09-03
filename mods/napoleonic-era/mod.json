@@ -17,6 +17,7 @@
     "type": "IsolatedFolder",
     "defaultFolder": "C:\\Program Files (x86)\\Napoleonic Era",
     "probeFile": "age3n.exe",
+    "marker": "data\\proton.xml",
     "executable": "age3n.exe",
     "arguments": "",
     "privateSetupPath": true,
