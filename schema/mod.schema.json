@@ -130,6 +130,10 @@
       "maxLength": 80,
       "description": "Optional. Stable Add/Remove Programs registry subkey. The launcher uses this exact string under HKLM\\…\\Uninstall\\<here>. When omitted the launcher derives `<id>_launcher`."
     },
+    "supportsObserver": {
+      "type": "boolean",
+      "description": "Optional. Whether this mod ships maps that support an observer. AoE3 has no engine-level spectator: an observer is a real player occupying a real map slot, and it is the MAP script that leaves them with no town centre, no settlers and no crates. So the answer is a property of the mod's map pool rather than of the launcher — on a mod without such maps an 'observer' simply starts as an ordinary player and the match is quietly uneven. Wars of Liberty qualifies: its ESOC tournament pool carries the observer code. Default false."
+    },
     "userDataFolder": {
       "type": "string",
       "minLength": 1,
