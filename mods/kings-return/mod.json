@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "kings-return",
+  "displayName": "King's Return",
+  "subtitle": "AoE3:TAD total conversion",
+  "accentColor": "#c49335",
+  "author": "WyteRaven",
+  "maintainers": ["Gorgorito12"],
+  "officialWebsite": "https://www.moddb.com/mods/age-of-empires-3-kings-return",
+  "links": [
+    { "type": "moddb", "url": "https://www.moddb.com/mods/age-of-empires-3-kings-return" },
+    { "type": "forum", "url": "https://aoe3.heavengames.com/cgi-bin/forums/display.cgi?action=st&fn=1&tn=39185" },
+    { "type": "video", "url": "https://www.youtube.com/watch?v=6wFuwpqPx3c" },
+    { "type": "other", "url": "https://www.facebook.com/Age-of-Empires-III-Kings-Return-499947836855712", "label": "Facebook" }
+  ],
+  "icon": "icon.png",
+  "description": {
+    "en": "Total conversion that returns the game to its earliest eras, the 16th to 18th centuries. Adds the Timurid Mongols, the Safavid Persians, the Kongo and Oyo kingdoms of West Africa and the Knights Hospitaller of Malta, each with their own units, technologies and home cities, and reworks the base civilizations around the earlier timeline. Built on The Asian Dynasties; the launcher clones your Age of Empires III install so the original stays untouched.",
+    "es": "Conversión total que devuelve el juego a sus épocas más tempranas, entre los siglos XVI y XVIII. Suma a los mongoles timúridas, los persas safávidas, los reinos africanos del Congo y de Oyo y los Caballeros Hospitalarios de Malta, cada uno con sus propias unidades, tecnologías y metrópolis, y rehace las civilizaciones base en torno a esa cronología. Funciona sobre The Asian Dynasties; el launcher clona tu instalación de Age of Empires III para que la original quede intacta."
+  },
+  "sourceRepo": "papillo12/Age-of-Empires-3-The-King-s-Return",
+  "approvedReleaseTag": "1.01",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\King's Return",
+    "probeFile": "data\\protok.xml",
+    "marker": "data\\techtreek.xml",
+    "executable": "age3k.exe",
+    "arguments": "",
+    "multiplayerProbeFiles": ["data\\protok.xml", "data\\techtreek.xml", "data\\stringtablek.xml"]
+  },
+  "userDataFolder": "King's Return",
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "followLatest": true
+    }
+  }
+}
