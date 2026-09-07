@@ -19,7 +19,7 @@
     "es": "Conversión total que devuelve el juego a sus épocas más tempranas, entre los siglos XVI y XVIII. Suma a los mongoles timúridas, los persas safávidas, los reinos africanos del Congo y de Oyo y los Caballeros Hospitalarios de Malta, cada uno con sus propias unidades, tecnologías y metrópolis, y rehace las civilizaciones base en torno a esa cronología. Funciona sobre The Asian Dynasties; el launcher clona tu instalación de Age of Empires III para que la original quede intacta."
   },
   "sourceRepo": "papillo12/Age-of-Empires-3-The-King-s-Return",
-  "approvedReleaseTag": "1.01",
+  "approvedReleaseTag": "1.0.0",
   "install": {
     "type": "IsolatedFolder",
     "defaultFolder": "C:\\Program Files (x86)\\King's Return",
@@ -28,6 +28,7 @@
     "executable": "age3k.exe",
     "arguments": "",
     "userDataRedirect": true,
+    "privateSetupPath": true,
     "multiplayerProbeFiles": ["data\\protok.xml", "data\\techtreek.xml", "data\\stringtablek.xml"]
   },
   "userDataFolder": "King's Return",
