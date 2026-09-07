@@ -27,6 +27,7 @@
     "marker": "data\\techtreek.xml",
     "executable": "age3k.exe",
     "arguments": "",
+    "userDataRedirect": true,
     "multiplayerProbeFiles": ["data\\protok.xml", "data\\techtreek.xml", "data\\stringtablek.xml"]
   },
   "userDataFolder": "King's Return",
