@@ -4,7 +4,12 @@
   "title": "AoE3 Mod Manifest",
   "description": "Schema validated by the catalog repo CI on every PR. The launcher reads manifests that pass this schema; anything else is rejected.",
   "type": "object",
-  "required": ["id", "displayName", "install", "update"],
+  "required": [
+    "id",
+    "displayName",
+    "install",
+    "update"
+  ],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -55,12 +60,23 @@
       "description": "Optional community links (Discord invite, ModDB page, forum, wiki, videos) shown as a row of pills in the launcher's Workshop detail panel. Purely informational — the launcher only opens them in the user's browser, and it shows the FULL url in the button's tooltip so players can see where a link actually leads before clicking. Unlike 'officialWebsite' (whose HTTP allowance is legacy), these are HTTPS-only. A link that just repeats 'officialWebsite' is not rendered twice. Editing this array is a tier1 (cosmetic) change, so only the mod's own maintainers can auto-merge it.",
       "items": {
         "type": "object",
-        "required": ["type", "url"],
+        "required": [
+          "type",
+          "url"
+        ],
         "additionalProperties": false,
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["website", "discord", "moddb", "forum", "wiki", "video", "other"],
+            "enum": [
+              "website",
+              "discord",
+              "moddb",
+              "forum",
+              "wiki",
+              "video",
+              "other"
+            ],
             "description": "Kind of destination. Only picks the default caption and has no effect on what the launcher does — it never renders a brand logo (trademark)."
           },
           "url": {
@@ -147,12 +163,17 @@
     },
     "install": {
       "type": "object",
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "additionalProperties": false,
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["IsolatedFolder", "InPlaceOverlay"],
+          "enum": [
+            "IsolatedFolder",
+            "InPlaceOverlay"
+          ],
           "description": "IsolatedFolder = mod lives in its own folder cloned from AoE3 (e.g. WoL). InPlaceOverlay = files extracted on top of AoE3 (e.g. Improvement Mod)."
         },
         "defaultFolder": {
@@ -176,7 +197,9 @@
         },
         "multiplayerProbeFiles": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "maxItems": 6,
           "description": "Install-relative files that identify this mod's VERSION for the multiplayer join check. Declare ONLY for a mod that ships its own data files instead of overwriting the base 'y' files (data\\protoy.xml / techtreey.xml / stringtabley.xml) — e.g. Napoleonic Era's data\\proton.xml + data\\techtreen.xml. Omit for a normal overlay mod: the launcher default is correct. Getting this wrong lets two different versions share a match and desync, so it is a CRITICAL (manual-review) field, never cosmetic."
         },
@@ -192,7 +215,11 @@
           "type": "string",
           "maxLength": 100,
           "pattern": "^[^\\\\/]+$",
-          "description": "Optional NAME of a second asset on the same GitHub release (e.g. 'userdata.zip') holding a small tree to seed into 'Documents\\My Games\\<userDataFolder>' \u2014 the folder skeleton, AI personalities or a starter profile some mods need to exist before they will start. The launcher only ADDS what is missing: a file the player already has is never overwritten, and uninstall can only take back files still byte-identical to what it wrote. Requires a non-empty top-level 'userDataFolder' (the destination has to be declared, never guessed) and update.mechanism GitHubReleases. Default: none."
+          "description": "Optional NAME of a second asset on the same GitHub release (e.g. 'userdata.zip') holding a small tree to seed into 'Documents\\My Games\\<userDataFolder>' — the folder skeleton, AI personalities or a starter profile some mods need to exist before they will start. The launcher only ADDS what is missing: a file the player already has is never overwritten, and uninstall can only take back files still byte-identical to what it wrote. Requires a non-empty top-level 'userDataFolder' (the destination has to be declared, never guessed) and update.mechanism GitHubReleases. Default: none."
+        },
+        "supersedeCompiledXml": {
+          "type": "boolean",
+          "description": "Optional, default false. Remove the base game's compiled 'data\\<name>.xml.XMB' where this mod ships its own '<name>.xml' and no compiled twin. Age of Empires III reads the compiled file in preference to the loose .xml, and an IsolatedFolder install is a CLONE of the player's own game — so without this a mod that ships modded .xml files installs with the PLAYER's compiled tables on top of them, in their language and with the base game's data. Set it only if your mod is distributed as a COMPLETE game folder that carries no compiled tables of its own (a canonical install then has none either, so removal converges on it). Leave it false if your mod installs OVER the player's AoE3, where every canonical peer keeps those files and removing them would cause LAN version mismatches. Only meaningful with type IsolatedFolder."
         },
         "privateSetupPath": {
           "type": "boolean",
@@ -218,12 +245,19 @@
     },
     "update": {
       "type": "object",
-      "required": ["mechanism"],
+      "required": [
+        "mechanism"
+      ],
       "additionalProperties": false,
       "properties": {
         "mechanism": {
           "type": "string",
-          "enum": ["WolPatcher", "DelegatedExternal", "GitHubReleases", "Manual"],
+          "enum": [
+            "WolPatcher",
+            "DelegatedExternal",
+            "GitHubReleases",
+            "Manual"
+          ],
           "description": "WolPatcher = UpdateInfo.xml + .tar.xz patches. DelegatedExternal = mod has its own external patcher; launcher only plays. GitHubReleases = updates ship as GitHub Releases on the mod's own repo. Manual = the launcher lists the mod but doesn't try to update it (used for demos, prototypes, or mods whose update story isn't decided yet)."
         },
         "wol": {
@@ -282,7 +316,9 @@
             }
           },
           "dependentRequired": {
-            "externalAssetUrlTemplate": ["externalAssetSha256"]
+            "externalAssetUrlTemplate": [
+              "externalAssetSha256"
+            ]
           }
         }
       }
