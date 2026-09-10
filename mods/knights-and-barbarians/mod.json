@@ -1,0 +1,38 @@
+﻿{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "knights-and-barbarians",
+  "displayName": "Knights and Barbarians",
+  "subtitle": "Medieval total conversion",
+  "accentColor": "#8c6b3a",
+  "author": "Lyvione",
+  "officialWebsite": "https://www.moddb.com/mods/knights-and-barbarians",
+  "maintainers": [
+    "Gorgorito12",
+    "Lyvione"
+  ],
+  "icon": "icon.png",
+  "description": {
+    "en": "Medieval total conversion for AoE3: The Asian Dynasties. The launcher clones your Age of Empires III install into a separate folder and overlays the mod on top, so your original AoE3 stays untouched. It also prepares the mod's own save folder in Documents\\My Games, which the mod needs in order to load its maps — adding only what is missing there, never touching your saved games.",
+    "es": "Conversión total medieval para AoE3: The Asian Dynasties. El launcher clona tu instalación de Age of Empires III en una carpeta aparte y aplica el mod encima, así tu AoE3 original queda intacto. También prepara la carpeta de guardado propia del mod en Documentos\\My Games, que el mod necesita para cargar sus mapas — solo agrega lo que falta, nunca toca tus partidas guardadas."
+  },
+  "sourceRepo": "Lyvione/Age-Of-Empires-III---Knights-And-Barbarians",
+  "approvedReleaseTag": "1.3.6c",
+  "userDataFolder": "Knights and Barbarians",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\Knights and Barbarians",
+    "probeFile": "age3k.exe",
+    "marker": "Knights and Barbarians\\RM3",
+    "executable": "age3k.exe",
+    "arguments": "",
+    "userDataRedirect": false,
+    "userDataPayload": "userdata.zip",
+    "supersedeCompiledXml": true
+  },
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "followLatest": true
+    }
+  }
+}
