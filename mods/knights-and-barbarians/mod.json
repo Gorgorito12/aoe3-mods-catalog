@@ -11,6 +11,7 @@
     "Lyvione"
   ],
   "icon": "icon.png",
+  "heroImage": "hero.png",
   "description": {
     "en": "Medieval total conversion for AoE3: The Asian Dynasties. The launcher clones your Age of Empires III install into a separate folder and overlays the mod on top, so your original AoE3 stays untouched. It also prepares the mod's own save folder in Documents\\My Games, which the mod needs in order to load its maps — adding only what is missing there, never touching your saved games.",
     "es": "Conversión total medieval para AoE3: The Asian Dynasties. El launcher clona tu instalación de Age of Empires III en una carpeta aparte y aplica el mod encima, así tu AoE3 original queda intacto. También prepara la carpeta de guardado propia del mod en Documentos\\My Games, que el mod necesita para cargar sus mapas — solo agrega lo que falta, nunca toca tus partidas guardadas."
