@@ -188,6 +188,12 @@
           "type": "boolean",
           "description": "LEGACY — prefer 'privateSetupPath', which solves the same problem without moving anything. When true, the launcher junctions the registry 'setuppath' folder (the real '...\\bin') at this mod's install folder around launch and restores it afterwards, so a stock-exe total conversion loads its own content instead of VANILLA. The cost is that the player's 'bin' is renamed while the mod runs, and an abrupt exit leaves it that way until the launcher next starts. Default false."
         },
+        "userDataPayload": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[^\\\\/]+$",
+          "description": "Optional NAME of a second asset on the same GitHub release (e.g. 'userdata.zip') holding a small tree to seed into 'Documents\\My Games\\<userDataFolder>' \u2014 the folder skeleton, AI personalities or a starter profile some mods need to exist before they will start. The launcher only ADDS what is missing: a file the player already has is never overwritten, and uninstall can only take back files still byte-identical to what it wrote. Requires a non-empty top-level 'userDataFolder' (the destination has to be declared, never guessed) and update.mechanism GitHubReleases. Default: none."
+        },
         "privateSetupPath": {
           "type": "boolean",
           "description": "When true, the mod ships the STOCK 'age3y.exe' (no UHC patch) and is a clone-into-its-own-folder total conversion, so the engine would resolve its content through the BASE GAME's registry key and load VANILLA instead of the mod. At install time the launcher rewrites that key's name inside this install's own copy of the executable and creates a key of its own pointing here, so the mod and vanilla each read their own and both stay playable. Needs one administrator prompt (the key lives in HKLM). Needed by any non-UHC mod installed as 'IsolatedFolder' — both replacement total conversions (Struggle of Indonesia) and mods whose files merely sit alongside the base ones (Napoleonic Era), because what matters is that the exe reads the registry key rather than its own folder, not whether it overwrites anything. UHC mods (WoL / Improvement Mod / ESOC) do NOT need it: their exe reads the working directory. Ignored, with a warning in the log, on any install type other than 'IsolatedFolder'. Mutually exclusive with 'setupPathRedirect'. Note the key must fit in 72 characters, which caps the mod's displayName at 33. Default false."
