@@ -1,10 +1,10 @@
 ﻿{
   "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
-  "id": "knights-and-barbarians",
-  "displayName": "Knights and Barbarians",
+  "id": "knights-and-barbarians-remastered",
+  "displayName": "Knights and Barbarians-Remastered",
   "subtitle": "Medieval total conversion",
   "accentColor": "#8c6b3a",
-  "author": "Knights and Barbarians Team",
+  "authors": "Knights and Barbarians Team (disbanded after 1.2.4 patch)","Lyvione (current)"
   "officialWebsite": "https://www.moddb.com/mods/knights-and-barbarians",
   "maintainers": [
     "Gorgorito12",
@@ -16,7 +16,7 @@
   "icon": "icon.png",
   "heroImage": "hero.png",
   "description": {
-    "en": "Total conversion that moves the game to the medieval Mediterranean, from the twilight of Rome to the eve of the Renaissance. Ten powers of the Crusades are playable — Byzantium, Venice, Sicily, Trebizond, Jerusalem, Antioch, the Sultanate of Rûm, the Zengids, the Ayyubids and the Almohads — each with its own units, home city and technologies. Over thirty maps run from Acre and the Holy Land to Anatolia, the Nile Delta and Andalusia. Kept going today by Lyvione.",
+    "en": "A medieval total conversion mod. This project aims to remaster the classic K&B mod that got abandoned by the original team around 2013 and development stopped. The goal of the project is to add 5 more civs, modernize the UI, add new units, balance the civilizations etc. This remaster is also fully refocusing the mod to the medieval Mediterranean and the Crusades era. The time period has been shifted from the 11th century and the First Crusade, to the dawn of the Renaissance. Ten grand powers of the Crusades Era are playable — The Byzantine Empire, The Republic of Venice, The Kingdom Of Sicily, The Empire Of Trebizond, The Kingdom Of Jerusalem, The Pricipality Of Antioch, The Sultanate of Rûm, The Zengid Emirate, The Ayyubid Sultanate and The Almohad Caliphate — each with its own units, home city and technologies. Fight your enemies and deal with the Barbarian natives to claim ultimate power over the Mediterranean across over thirty maps - from Acre and the Holy Land to Anatolia, the Nile Delta and Andalusia. Kept going today by Lyvione.",
     "es": "Conversión total que lleva el juego al Mediterráneo medieval, del ocaso de Roma a las puertas del Renacimiento. Diez potencias de las Cruzadas son jugables —Bizancio, Venecia, Sicilia, Trebisonda, Jerusalén, Antioquía, el Sultanato de Rum, los zéngidas, los ayubíes y los almohades—, cada una con sus propias unidades, metrópoli y tecnologías. Más de treinta mapas van de Acre y Tierra Santa a Anatolia, el delta del Nilo y Al-Ándalus. Hoy lo mantiene Lyvione."
   },
   "sourceRepo": "Lyvione/Age-Of-Empires-III---Knights-And-Barbarians",
