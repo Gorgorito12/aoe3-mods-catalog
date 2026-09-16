@@ -1,21 +1,26 @@
-# Validate mod-catalog PRs and auto-merge the safe ones.
+# Validate mod-catalog PRs and hand a decision to the companion workflow.
 #
 # Pipeline (jobs depend in this order):
 #
-#   1. classify   - look at the diff, decide tier1/tier2/tier3/invalid.
-#   2. validate   - JSON Schema + image spec checks. Skipped on 'invalid'.
-#   3. block      - on 'invalid', comment + fail the workflow.
-#      auto_merge - on 'tier1' / 'tier2' (after validate passes), turn on
-#                   GitHub's auto-merge so the PR squash-merges as soon as
-#                   required checks are green.
-#      review     - on 'tier3', label the PR and comment requesting human
-#                   review. No auto-merge.
+#   1. classify - look at the diff AND at who the author is, decide the outcome,
+#                 then record it as an artifact for the companion workflow.
+#   2. validate - JSON Schema + image spec checks. Only runs for the outcomes
+#                 where a manifest is actually in play ('owner', 'tier3').
+#
+# This workflow runs under `pull_request`, which means that on a FORK PR its
+# GITHUB_TOKEN is READ-ONLY no matter what `permissions:` declares. So nothing
+# here may depend on write access. The privileged half — enabling auto-merge,
+# labelling, and commenting the outcome back to the contributor — lives in
+# auto-merge-apply.yml, which GitHub runs from the DEFAULT BRANCH on
+# `workflow_run` with a writable token and which never checks out PR code.
+#
+# The merge is blocked by `classify` exiting non-zero (it is a required check),
+# never by a job that merely goes red: a non-required job's red X does not stop
+# branch protection, and a *skipped* required check counts as passing.
 #
 # What it explicitly does NOT do:
-#   - It never auto-approves a PR. Required-approvals on the branch should
-#     either be 0, or come from a GitHub App / CODEOWNERS bot you trust.
-#     The workflow only enables auto-merge; the merge happens once branch
-#     protection's required checks pass.
+#   - It never auto-approves a PR. Required-approvals on the branch must be 0;
+#     GITHUB_TOKEN cannot approve pull requests by design.
 #   - It never deletes or force-pushes anything.
 
 name: Validate and auto-merge
@@ -24,17 +29,13 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
-# Required so the workflow can comment on PRs, label them, and call
-# `gh pr merge --auto`. If you tighten the repo's default token permissions,
-# keep these.
+# Deliberately read-only. Every write lives in auto-merge-apply.yml — see header.
 permissions:
-  contents: write
-  pull-requests: write
-  issues: write
+  contents: read
 
-# Cancel an in-flight run when a new commit lands on the same PR. Saves
-# minutes and avoids a stale 'tier' decision auto-merging after the diff
-# changed.
+# Cancel an in-flight run when a new commit lands on the same PR. Saves minutes
+# and avoids a stale decision being applied after the diff changed (the companion
+# workflow also re-checks the head SHA before acting).
 concurrency:
   group: validate-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -55,6 +56,7 @@ jobs:
           # Need both base and head to diff. Default fetch-depth=1 only
           # fetches the head commit, which breaks `git diff base...head`.
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -73,41 +75,63 @@ jobs:
         id: classify
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
+          # Pin the diff AND the ownership read to the commit the PR targets.
+          # Against the live origin/<base> tip, a PR merged by hand while this run
+          # is queued makes the diff come back EMPTY and makes `maintainers` be
+          # read from the PR's own copy — which voids the whole ownership gate.
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: python .github/scripts/classify_pr.py
 
-      # A non-owner tried to change a mod they don't maintain: the classifier
-      # exited non-zero, failing this required check so branch protection blocks
-      # the merge. Post a friendly explanation (best-effort; the token is
-      # read-only on fork PRs, so tolerate a failure).
-      - name: Explain ownership block
-        if: always() && steps.classify.outputs.tier == 'unauthorized'
+      # Hand the decision to the companion workflow. Written here, in the job that
+      # runs NO PR-authored code, so the PR cannot author its own verdict — the
+      # `validate` job below does run PR content and must never write this.
+      # `always()` because 'unauthorized' and 'invalid' exit non-zero on purpose
+      # and the contributor still deserves the explanation comment.
+      - name: Record the decision for the companion workflow
+        if: always() && steps.classify.outputs.tier != ''
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR: ${{ github.event.pull_request.number }}
+          TIER: ${{ steps.classify.outputs.tier }}
+          MOD_ID: ${{ steps.classify.outputs.mod_id }}
           REASON: ${{ steps.classify.outputs.reason }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$(
-            cat <<EOF
-          🔒 **This change is blocked — you are not a maintainer of this mod.**
+          mkdir -p decision
+          {
+            printf 'pr_number=%s\n' "$PR_NUMBER"
+            printf 'head_sha=%s\n'  "$HEAD_SHA"
+            printf 'tier=%s\n'      "$TIER"
+            printf 'mod_id=%s\n'    "$MOD_ID"
+            printf 'reason=%s\n'    "$REASON"
+          } > decision/decision.txt
+          cat decision/decision.txt
 
-          $REASON
+      - name: Upload the decision
+        if: always() && steps.classify.outputs.tier != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-decision
+          path: decision/decision.txt
+          retention-days: 1
 
-          Only a mod's listed maintainers (its author) can change it. If you should
-          have access, ask a repo maintainer to add your GitHub username to that
-          mod's \`maintainers\` list in its \`mod.json\`.
-          EOF
-          )" || true
-
-  # -- 2. Validate the manifest + assets (skipped if 'invalid') -------------
+  # -- 2. Validate the manifest + assets ------------------------------------
+  # Only the outcomes that actually involve a manifest. 'infra' and
+  # 'already-merged' have nothing to validate; 'invalid' / 'unauthorized' /
+  # 'error' already failed `classify`, which is the required check.
   validate:
     name: Validate manifest and assets
     needs: classify
-    if: needs.classify.outputs.tier != 'invalid'
+    if: contains(fromJSON('["owner", "tier3"]'), needs.classify.outputs.tier)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # This job runs PR-authored content and a green result here is what
+          # authorises the companion workflow to merge. Leave no credentials in
+          # the checkout for that content to find.
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
@@ -116,6 +140,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      # Same reasoning as the classifier pin above: the schema and the image
+      # validator decide whether a PR may merge, so they must come from the base
+      # branch. Without this a fork could ship a permissive schema (or an
+      # always-passing validate_images.py) alongside its own manifest.
+      - name: Pin validators to the base branch (don't trust the PR's copy)
+        run: |
+          git fetch --no-tags --depth=1 origin "${{ github.event.pull_request.base.ref }}"
+          git checkout FETCH_HEAD -- schema/mod.schema.json .github/scripts/validate_images.py
 
       - name: Install validators
         # ajv-cli for JSON Schema; Pillow for image-spec checks.
@@ -135,99 +168,3 @@ jobs:
 
       - name: Validate image specs
         run: python .github/scripts/validate_images.py
-
-  # -- 3a. Block invalid PRs ------------------------------------------------
-  block:
-    name: Block (structural problems)
-    needs: classify
-    if: needs.classify.outputs.tier == 'invalid'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Comment and fail
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR: ${{ github.event.pull_request.number }}
-          REASON: ${{ needs.classify.outputs.reason }}
-        run: |
-          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$(
-            cat <<EOF
-          ❌ **This PR cannot be auto-processed.**
-
-          Reason: $REASON
-
-          PRs to this catalog must:
-          - Touch files only inside a single \`mods/<mod-id>/\` folder
-          - Use only recognised filenames: \`mod.json\`, \`icon.png\`, \`banner.png\`/\`banner.jpg\`
-
-          Please open separate PRs per mod, and keep workflow / schema /
-          documentation changes in their own PR.
-          EOF
-          )"
-          # Fail the workflow so branch protection blocks the merge.
-          exit 1
-
-  # -- 3b. Enable auto-merge for tier1/tier2 PRs that passed validation -----
-  auto_merge:
-    name: Enable auto-merge
-    needs: [classify, validate]
-    # 'owner' = a change by an authorized maintainer of this mod (or a repo
-    # maintainer), any field, after validation passed. Non-owner cosmetic changes
-    # never reach here — the classifier fails on 'unauthorized'.
-    if: needs.classify.outputs.tier == 'owner'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Turn on auto-merge
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR: ${{ github.event.pull_request.number }}
-          TIER: ${{ needs.classify.outputs.tier }}
-          REASON: ${{ needs.classify.outputs.reason }}
-        # Squash so the PR collapses to one commit on main; cleaner history
-        # for catalog updates that may iterate via several pushes.
-        run: |
-          gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --auto --squash
-          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$(
-            cat <<EOF
-          ✅ **Auto-merge enabled** — tier: \`$TIER\`.
-
-          $REASON
-
-          The PR will merge automatically once all required status checks
-          are green. Push more commits to the same PR if validation fails;
-          this run will redo classification on the new diff.
-          EOF
-          )"
-
-  # -- 3c. Tier 3 changes -> ask a maintainer ------------------------------
-  request_review:
-    name: Request manual review
-    needs: [classify, validate]
-    if: needs.classify.outputs.tier == 'tier3'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Label and comment
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR: ${{ github.event.pull_request.number }}
-          REASON: ${{ needs.classify.outputs.reason }}
-        run: |
-          # Create the label idempotently so first-run on a fresh repo works.
-          gh label create needs-manual-review \
-            --repo "$GITHUB_REPOSITORY" \
-            --color "f9d71c" \
-            --description "Catalog PR with critical changes that needs human review" \
-            2>/dev/null || true
-
-          gh pr edit "$PR" --repo "$GITHUB_REPOSITORY" --add-label "needs-manual-review"
-          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$(
-            cat <<EOF
-          🔍 **Manual review required.**
-
-          $REASON
-
-          This PR changes fields the launcher trusts at runtime (install
-          paths, payload URLs, executable, source repository). A maintainer
-          will look at it before it can merge — please do not push pressure
-          comments; you'll get a response when someone is available.
-          EOF
-          )"

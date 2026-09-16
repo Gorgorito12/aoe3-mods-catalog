@@ -1,0 +1,49 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "knights-and-barbarians-remastered",
+  "previousIds": [
+    "knights-and-barbarians"
+  ],
+  "displayName": "Knights and Barbarians-Remastered",
+  "subtitle": "Medieval total conversion",
+  "accentColor": "#8c6b3a",
+  "author": "Knights and Barbarians Team (2013) & Lyvione (current)",
+  "officialWebsite": "https://www.moddb.com/mods/knights-and-barbarians",
+  "maintainers": [
+    "Gorgorito12",
+    "Lyvione"
+  ],
+  "links": [
+    {
+      "type": "discord",
+      "url": "https://discord.gg/yQnD4wcrPt"
+    }
+  ],
+  "icon": "icon.png",
+  "heroImage": "hero.png",
+  "description": {
+    "en": "A medieval total conversion, and a remaster of the classic K&B mod abandoned by its original team in 2013 — five new civs, a modernised UI, new units and rebalanced play. Ten powers of the Crusades era are playable: Byzantium, Venice, Sicily, Trebizond, Jerusalem, Antioch, the Sultanate of Rûm, the Zengids, the Ayyubids and the Almohads. Over thirty maps run from Acre and the Holy Land to Anatolia, the Nile Delta and Andalusia. Kept going today by Lyvione.",
+    "es": "Conversión total medieval y remasterización del clásico K&B, abandonado por su equipo original en 2013: cinco civilizaciones nuevas, interfaz modernizada, unidades nuevas y reequilibrio. Diez potencias de la época de las Cruzadas son jugables: Bizancio, Venecia, Sicilia, Trebisonda, Jerusalén, Antioquía, el Sultanato de Rum, los zéngidas, los ayubíes y los almohades. Más de treinta mapas van de Acre y Tierra Santa a Anatolia, el delta del Nilo y Al-Ándalus. Hoy lo mantiene Lyvione."
+  },
+  "sourceRepo": "Lyvione/Age-Of-Empires-III---Knights-And-Barbarians",
+  "installProductGuid": "knights-and-barbarians_launcher",
+  "approvedReleaseTag": "1.3.6c",
+  "userDataFolder": "Knights and Barbarians",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\Knights and Barbarians",
+    "probeFile": "age3k.exe",
+    "marker": "Knights and Barbarians\\RM3",
+    "executable": "age3k.exe",
+    "arguments": "",
+    "userDataRedirect": false,
+    "userDataPayload": "userdata.zip",
+    "supersedeCompiledXml": true
+  },
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "followLatest": true
+    }
+  }
+}

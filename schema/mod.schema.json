@@ -18,8 +18,18 @@
     },
     "id": {
       "type": "string",
-      "pattern": "^[a-z][a-z0-9-]{1,30}$",
-      "description": "Unique mod id. Lowercase alphanumerics + hyphens only. Must match the folder name under /mods/."
+      "pattern": "^[a-z][a-z0-9-]{1,38}$",
+      "description": "Unique mod id. Lowercase alphanumerics + hyphens only. Must match the folder name under /mods/ — the launcher skips outright any mod whose id and folder disagree. It is the primary key: the user's saved install path, their collection entry and the derived uninstall registry key are all filed under it. Renaming one requires previousIds."
+    },
+    "previousIds": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]{1,38}$"
+      },
+      "description": "Ids this mod published under BEFORE. Set it ONLY when renaming a mod folder, listing the old folder name — classify_pr.py refuses a rename that omits it, because without it the rename orphans every existing installation. The launcher uses it to move a user's saved state onto the new id and to adopt an install folder whose install-manifest.json still carries the old id. NEVER list an id belonging to another mod: that is a claim on their install folder, which is why this is a tier-3 (reviewed) field. The launcher additionally refuses any entry naming a built-in or a mod still live in the catalog."
     },
     "displayName": {
       "type": "string",

@@ -1,0 +1,219 @@
+# Privileged half of the catalog gate: act on the decision auto-merge.yml made.
+#
+# WHY THIS FILE EXISTS
+# auto-merge.yml runs under `pull_request`, so on a FORK PR its GITHUB_TOKEN is
+# read-only however `permissions:` is written — it can classify and validate, but
+# it cannot merge, label or comment. Since the whole point of the ownership gate
+# is that a mod's maintainer self-serves, and maintainers contribute from forks,
+# that made owner auto-merge impossible. `workflow_run` fixes it: GitHub always
+# takes this file from the DEFAULT BRANCH and gives it a writable token.
+#
+# WHAT KEEPS THAT SAFE
+#   - It NEVER checks out the PR. No PR-authored code runs in this job, ever.
+#     If you add a checkout step here, you have handed fork PRs a write token.
+#   - The decision was produced by classify_pr.py pinned to the base branch, in a
+#     job that runs no PR content, so a PR cannot author its own verdict.
+#   - Every artifact value is treated as untrusted: the PR number must be digits,
+#     the head SHA hex, the tier one of a fixed list, the mod id [a-z0-9-]. The
+#     free-text reason is passed through the environment and never interpolated
+#     into a command.
+#   - It re-reads the PR from the API and refuses to act if it is no longer open
+#     or if the head commit moved since the decision was made.
+#
+# This workflow must NOT be a required status check: it runs after the checks it
+# depends on, so requiring it would deadlock the merge it is trying to enable.
+
+name: Apply catalog PR decision
+
+on:
+  workflow_run:
+    workflows: ["Validate and auto-merge"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read # to download the decision artifact from the triggering run
+
+jobs:
+  apply:
+    name: Apply decision
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion != 'cancelled' && github.event.workflow_run.conclusion != 'skipped'
+    steps:
+      # Missing artifact = the classifier died before writing a decision. Nothing
+      # to apply; `classify` is red anyway, so the merge stays blocked.
+      - name: Download the decision
+        id: fetch
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-decision
+          path: decision
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Parse and sanity-check the decision
+        id: decision
+        if: steps.fetch.outcome == 'success'
+        run: |
+          set -euo pipefail
+          file=decision/decision.txt
+          test -f "$file"
+          pr_number=$(sed -n 's/^pr_number=//p' "$file" | head -1)
+          head_sha=$(sed -n 's/^head_sha=//p' "$file" | head -1)
+          tier=$(sed -n 's/^tier=//p' "$file" | head -1)
+          mod_id=$(sed -n 's/^mod_id=//p' "$file" | head -1)
+
+          # Untrusted input: validate the shape of everything before it is used.
+          case "$pr_number" in ''|*[!0-9]*) echo "::error::Malformed pr_number"; exit 1 ;; esac
+          case "$head_sha" in ''|*[!0-9a-f]*) echo "::error::Malformed head_sha"; exit 1 ;; esac
+          case "$mod_id" in *[!a-z0-9-]*) echo "::error::Malformed mod_id"; exit 1 ;; esac
+          case "$tier" in
+            owner|tier3|unauthorized|invalid|infra|already-merged|error) ;;
+            *) echo "::error::Unknown tier"; exit 1 ;;
+          esac
+
+          {
+            echo "pr_number=$pr_number"
+            echo "head_sha=$head_sha"
+            echo "tier=$tier"
+            echo "mod_id=$mod_id"
+          } >> "$GITHUB_OUTPUT"
+          echo "Decision: tier=$tier mod_id=$mod_id pr=#$pr_number sha=$head_sha"
+
+      - name: Verify the PR is still open at the classified commit
+        id: guard
+        if: steps.decision.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.decision.outputs.pr_number }}
+          EXPECTED_SHA: ${{ steps.decision.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          state=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json state -q .state)
+          current_sha=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json headRefOid -q .headRefOid)
+          if [ "$state" != "OPEN" ]; then
+            echo "::notice::PR #$PR is $state — nothing to apply."
+            echo "act=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$current_sha" != "$EXPECTED_SHA" ]; then
+            echo "::notice::PR #$PR moved to $current_sha since this decision was made for $EXPECTED_SHA — a newer run will handle it."
+            echo "act=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "act=true" >> "$GITHUB_OUTPUT"
+
+      # -- owner: the author maintains this mod and validation passed ---------
+      - name: Enable auto-merge
+        if: >
+          steps.guard.outputs.act == 'true' &&
+          steps.decision.outputs.tier == 'owner' &&
+          github.event.workflow_run.conclusion == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.decision.outputs.pr_number }}
+        # Squash so the PR collapses to one commit on main; cleaner history for
+        # catalog updates that may iterate via several pushes. A single-parent
+        # commit on main is also the proof that the workflow merged it, not a human.
+        run: |
+          set -uo pipefail
+          REASON=$(sed -n 's/^reason=//p' decision/decision.txt | head -1)
+          export REASON
+          if ! gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --auto --squash; then
+            echo "::warning::Could not enable auto-merge on PR #$PR. Check that 'Allow auto-merge' and squash merging are enabled in repo settings and that the branch has at least one required status check. A maintainer must merge this one manually."
+            exit 0
+          fi
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$(
+            cat <<EOF
+          ✅ **Auto-merge enabled** — you maintain this mod.
+
+          $REASON
+
+          The PR will merge automatically once all required status checks are
+          green. Push more commits to the same PR if validation fails; the checks
+          re-run and this decision is recomputed on the new diff.
+          EOF
+          )" || true
+
+      # -- tier3: a human has to look at this --------------------------------
+      - name: Request manual review
+        if: steps.guard.outputs.act == 'true' && steps.decision.outputs.tier == 'tier3'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.decision.outputs.pr_number }}
+        run: |
+          set -uo pipefail
+          REASON=$(sed -n 's/^reason=//p' decision/decision.txt | head -1)
+          export REASON
+          # Create the label idempotently so first-run on a fresh repo works.
+          gh label create needs-manual-review \
+            --repo "$GITHUB_REPOSITORY" \
+            --color "f9d71c" \
+            --description "Catalog PR with critical changes that needs human review" \
+            2>/dev/null || true
+          gh pr edit "$PR" --repo "$GITHUB_REPOSITORY" --add-label "needs-manual-review" \
+            || echo "::warning::Could not label PR #$PR."
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$(
+            cat <<EOF
+          🔍 **Manual review required.**
+
+          $REASON
+
+          This PR changes fields the launcher trusts at runtime (install paths,
+          payload URLs, executable, source repository), or comes from someone who
+          does not yet maintain this mod. A maintainer will look at it before it
+          can merge — please do not push pressure comments; you'll get a response
+          when someone is available.
+          EOF
+          )" || true
+
+      # -- unauthorized: someone editing a mod they don't maintain -------------
+      - name: Explain the ownership block
+        if: steps.guard.outputs.act == 'true' && steps.decision.outputs.tier == 'unauthorized'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.decision.outputs.pr_number }}
+        run: |
+          set -uo pipefail
+          REASON=$(sed -n 's/^reason=//p' decision/decision.txt | head -1)
+          export REASON
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$(
+            cat <<EOF
+          🔒 **This change is blocked — you are not a maintainer of this mod.**
+
+          $REASON
+
+          Only a mod's listed maintainers can change it. If you should have
+          access, ask a repo maintainer to add your GitHub username to that mod's
+          \`maintainers\` list in its \`mod.json\`.
+          EOF
+          )" || true
+
+      # -- invalid: structurally not a catalog PR -----------------------------
+      - name: Explain the structural block
+        if: steps.guard.outputs.act == 'true' && steps.decision.outputs.tier == 'invalid'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ steps.decision.outputs.pr_number }}
+        run: |
+          set -uo pipefail
+          REASON=$(sed -n 's/^reason=//p' decision/decision.txt | head -1)
+          export REASON
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$(
+            cat <<EOF
+          ❌ **This PR cannot be auto-processed.**
+
+          Reason: $REASON
+
+          PRs to this catalog must:
+          - Touch files only inside a single \`mods/<mod-id>/\` folder
+          - Use only recognised filenames: \`mod.json\`, \`icon.png\`,
+            \`banner.png\`/\`banner.jpg\`, \`hero.png\`/\`hero.jpg\`,
+            \`screenshot1\`..\`screenshot8\`
+
+          Please open separate PRs per mod, and keep workflow / schema /
+          documentation changes in their own PR.
+          EOF
+          )" || true

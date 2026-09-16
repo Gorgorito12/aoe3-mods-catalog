@@ -1,0 +1,8 @@
+# Python bytecode from running the CI scripts locally. These have no business in
+# a data catalog, and least of all next to a classifier whose integrity gates
+# what the launcher downloads and executes.
+__pycache__/
+*.pyc
+
+# Local validator installs (see CLAUDE.md "Validating locally").
+node_modules/

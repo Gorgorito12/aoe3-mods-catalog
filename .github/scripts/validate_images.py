@@ -176,7 +176,7 @@ def main() -> int:
             continue
 
         try:
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
         except json.JSONDecodeError:
             # Likewise — leave the JSON parse error to the schema step.
             continue

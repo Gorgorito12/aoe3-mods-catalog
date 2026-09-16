@@ -21,15 +21,41 @@ ajv validate -s schema/mod.schema.json -d "mods/**/mod.json" -c ajv-formats --st
 pip install Pillow
 python .github/scripts/validate_images.py
 
-# Tier classification — needs a base ref + head sha, run from a PR diff context
-BASE_REF=main HEAD_SHA=$(git rev-parse HEAD) python .github/scripts/classify_pr.py
+# Tier classification — needs a base ref, a head sha and the PR author.
+# PR_AUTHOR is what decides owner vs. unauthorized; without it the script fails
+# closed and every result looks like a non-owner's.
+BASE_REF=main HEAD_SHA=$(git rev-parse HEAD) PR_AUTHOR=<github-login> \
+  python .github/scripts/classify_pr.py
+
+# BASE_SHA is optional locally (it falls back to origin/$BASE_REF) but it is what
+# CI passes, and it is the only way to reproduce a PR whose base has since moved:
+BASE_REF=main BASE_SHA=<base-sha> HEAD_SHA=<head-sha> PR_AUTHOR=<login> \
+  python .github/scripts/classify_pr.py
 ```
 
 `validate_images.py` and `classify_pr.py` both assume the working directory is the repo root.
+Both decode manifests as `utf-8-sig`, so a stray UTF-8 BOM no longer breaks them — but **save
+`mod.json` without a BOM**. A BOM used to make `read_maintainers` fail closed to an empty set,
+silently locking a mod's real owners out of auto-merge, and made `validate_images.py` skip that
+mod entirely while still reporting "All images pass".
 
 ## Architecture: the three-tier auto-merge gate
 
-The entire repo exists to let cosmetic and version-bump PRs merge themselves while forcing a human to review anything dangerous. The pipeline is in `.github/workflows/auto-merge.yml`: **classify → validate → (block | auto_merge | request_review)**.
+The entire repo exists to let cosmetic and version-bump PRs merge themselves while forcing a human to review anything dangerous. The pipeline is split across **two** workflows, and the split is a security boundary, not a style choice:
+
+- `.github/workflows/auto-merge.yml` — trigger `pull_request`, `permissions: contents: read`.
+  **classify → validate.** On a fork PR GitHub forces `GITHUB_TOKEN` read-only whatever
+  `permissions:` says, so nothing here may depend on write access.
+- `.github/workflows/auto-merge-apply.yml` — trigger `workflow_run`, writable token.
+  **merge / label / comment.** GitHub always takes this file from the default branch and gives it a
+  real token even for fork PRs. It **never checks out PR code** — that is the whole reason it is
+  safe to give it write access. Adding a checkout step to it hands fork PRs a write token.
+
+The first workflow records its verdict as an artifact (`pr_number`, `head_sha`, `tier`, `mod_id`,
+`reason`) from the `classify` job only — never from `validate`, which runs PR-authored content. The
+second treats every value in it as untrusted (digits / hex / fixed tier list / `[a-z0-9-]`, and the
+free-text reason goes through the environment, never into a command line) and re-checks via the API
+that the PR is still open at the same head SHA before acting.
 
 `classify_pr.py` is the brain. It diffs the PR against the base, factors in **who** the author is
 (per-mod ownership), and emits an outcome to `GITHUB_OUTPUT` as `tier`:
@@ -37,33 +63,54 @@ The entire repo exists to let cosmetic and version-bump PRs merge themselves whi
 - **owner** — the PR author is a maintainer of the touched mod (its `maintainers` array) OR a
   repo-wide maintainer (`REPO_MAINTAINERS`). Auto-merge after validation, **for any field, including
   `install`/`update`** — an owner has full autonomy over their folder (deliberate trust grant).
-- **tier3** — a first-time mod submission, an unrecognised file, or a **non-owner** proposing a
-  critical/unknown-field change → labelled `needs-manual-review`, no auto-merge.
+- **tier3** — a first-time mod submission, an unrecognised file, a **deleted** `mod.json`,
+  unparseable JSON on either side, or a **non-owner** proposing a critical/unknown-field change →
+  labelled `needs-manual-review`, no auto-merge.
 - **unauthorized** — a **non-owner** changing a mod's cosmetic/release fields → the script `exit 1`s
   so the required `classify` check fails and branch protection blocks the merge (fork or
   collaborator). A best-effort comment explains it.
-- **invalid** — touched files outside a single `mods/<id>/` folder, multiple mods at once, or no
-  files → workflow comments and exits, branch protection blocks the merge.
+- **invalid** — touched files outside a single `mods/<id>/` folder, multiple mods at once, or a
+  genuinely empty diff → `exit 1` as well, plus an explanatory comment.
+- **infra** — a **repo-wide maintainer** touching only paths outside `mods/` (workflows, scripts,
+  schema, docs). Exits 0 and matches no job: nothing auto-merges, but nothing is blocked either.
+  Without this outcome, `invalid` exiting non-zero would make the repo's own CI and documentation
+  permanently unmergeable through a PR.
+- **already-merged** — the head commit is already an ancestor of the base branch, so the diff is
+  empty. Exits 0, matches no job, posts nothing. This is what a hand-merge landing mid-run looks
+  like; reporting it as a structural `invalid` was actively misleading.
+- **error** — the classifier crashed. The `__main__` wrapper still writes a `tier` (otherwise the
+  step dies with a bare traceback and downstream jobs key off an empty string) and exits 1.
 
 The **field tiers** (`TIER_1/2/3_FIELDS`) still exist but now only decide a **non-owner's** outcome
 (cosmetic/release → `unauthorized`; critical/unknown → `tier3`). An owner bypasses them.
 
 Ownership rules that are load-bearing:
-- `maintainers` is read from the **BASE** manifest (`git show origin/<base>:…`), never the PR's copy,
-  so a PR can't authorize itself. `maintainers` is in `TIER_3_FIELDS`, so a non-owner editing it lands
-  in manual review — nobody self-grants ownership.
-- The `unauthorized` block is guaranteed by `classify` exiting non-zero (that job is a required
-  check); the pre-existing `invalid`→`block` path is left as-is and NOT used for the ownership gate.
-- The workflow **pins `classify_pr.py` to the base ref** (`git checkout origin/<base> -- …`) before
-  running it, so a fork can't rewrite the classifier to bypass the ownership check. It also passes
-  `PR_AUTHOR=${{ github.event.pull_request.user.login }}`.
+- `maintainers` is read from the **BASE** manifest at `github.event.pull_request.base.sha`
+  (`BASE_SHA`), never the PR's copy, so a PR can't authorize itself. `maintainers` is in
+  `TIER_3_FIELDS`, so a non-owner editing it lands in manual review — nobody self-grants ownership.
+- **`BASE_SHA`, not the live `origin/<base>` tip, is what makes that true.** If a PR is merged by
+  hand while its run is queued, `origin/<base>` *becomes* the PR content: the diff comes back empty
+  **and** `maintainers` would be read straight out of the PR. Both the diff and the ownership read
+  are pinned to `base.sha` for this reason. `BASE_SHA` is optional (falls back to the tip) only so
+  local runs stay convenient.
+- Every blocking outcome is guaranteed by `classify` **exiting non-zero** — it is a required check.
+  Nothing relies on a non-required job going red, because branch protection ignores those, and it
+  counts a *skipped* required check as passing. That is why `invalid` returns 1 too.
+- The workflow **pins `classify_pr.py`, `validate_images.py` and `schema/mod.schema.json` to the
+  base ref** (`git checkout origin/<base> -- …`) before running them, so a fork can neither rewrite
+  the classifier to bypass the ownership check nor ship a permissive schema / always-passing image
+  validator alongside its own manifest. It also passes
+  `PR_AUTHOR=${{ github.event.pull_request.user.login }}`, and both checkouts use
+  `persist-credentials: false`.
 - **Accepted risk:** owner autonomy covers download URLs / executable. A trusted-but-compromised
   maintainer can auto-publish what runs on their mod's users' machines. Add `maintainers` only for
   people trusted with that mod.
 
 Classification rules that are easy to get wrong:
 - The workflow **enables** auto-merge (`gh pr merge --auto`); it never approves. Merges happen because branch protection requires the status checks to be green. Required approvals must be 0 (see README setup) — `GITHUB_TOKEN` cannot approve PRs by design.
-- Owner-fork auto-merge needs "Send write tokens to workflows from fork PRs" enabled (or the modder as a collaborator); otherwise `gh pr merge --auto` gets a read-only token on fork PRs and the owner's PR just waits. The ownership *block* works regardless.
+- Owner-fork auto-merge works through `auto-merge-apply.yml` (see above). **Do not** enable "Send write tokens to workflows from fork PRs" — it gives a write token to a run triggered by any fork PR from anyone, and write access here means publishing an `install.payloadUrls` the launcher executes on users' machines. The ownership *block* works regardless of any of this.
+- **Never merge a catalog PR by hand.** It bypasses the gate, and if it lands while the run is queued the classifier sees an empty diff and reports `already-merged` — nothing ever judged the change. Fix the cause (usually the manifest) instead.
+- `auto-merge-apply.yml` must **not** be a required status check: it runs after the checks it depends on, so requiring it would deadlock the merge it exists to enable. Conversely, at least one required check must exist or `gh pr merge --auto` is rejected outright.
 - Comparison is on **top-level JSON keys only** (`diff_keys`). A nested change inside `install` or `update` registers as that whole key changing → critical, which is the intended safe behaviour.
 - Any schema-valid field not listed in one of the three `TIER_*_FIELDS` sets falls through to the critical path for a non-owner (the conservative default).
 
@@ -89,7 +136,24 @@ Dimensions are validated by **aspect ratio + a width range** (NOT a single exact
 
 ## Manifest conventions (`mod.json`)
 
-- `id` must match the folder name under `mods/` and the pattern `^[a-z][a-z0-9-]{1,30}$`.
+- `id` must match the folder name under `mods/` and the pattern `^[a-z][a-z0-9-]{1,38}$`
+  (2–39 chars). The match is **enforced by the launcher, not by CI**: `ModCatalogService`
+  compares the manifest's `id` to the listing folder name with `StringComparison.Ordinal`
+  and, when they differ, **skips the mod entirely** — it does not appear at all. Nothing in
+  this repo checks it, so a mismatch ships silently and the mod simply vanishes.
+- `previousIds` (optional array, ≤4, same pattern as `id`) — ids this mod published under
+  **before**. Set it only when renaming a mod folder, listing the old folder name.
+  `classify_pr.py` **refuses a rename that omits it**: a published `id` is the key for the
+  user's saved install path, their collection entry, and the `modId` stamped into
+  `install-manifest.json` inside the install folder, so renaming without it makes the
+  launcher read every existing installation as somebody else's and offer a fresh multi-GB
+  install beside it. Never list another mod's id — that is a claim on their install folder,
+  which is why it sits in `TIER_3_FIELDS`. The launcher additionally drops any entry naming
+  a built-in or a mod still live in the catalog.
+- **Renaming a mod is a `tier3` change, never `owner`** — see `classify_rename`. It is a
+  delisting plus a relisting, and the delisting is what breaks installed clients. Pin
+  `installProductGuid` to the OLD derived key (`<old-id>_launcher`) at the same time, or a
+  reinstall under the new id leaves a second Add/Remove Programs entry behind.
 - `maintainers` (optional array of GitHub usernames) — the mod's owners. Governance-only: **the
   launcher ignores it** (it's not consumed by `ModCatalogManifest`). It's the auto-merge ownership
   gate (see the tier section): a listed author auto-merges any change to this mod; a non-owner is
