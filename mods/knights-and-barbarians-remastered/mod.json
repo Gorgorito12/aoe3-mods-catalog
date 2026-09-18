@@ -36,7 +36,7 @@
     "marker": "Knights and Barbarians\\RM3",
     "executable": "age3k.exe",
     "arguments": "",
-    "userDataRedirect": false,
+    "userDataRedirect": true,
     "userDataPayload": "userdata.zip",
     "supersedeCompiledXml": true
   },
