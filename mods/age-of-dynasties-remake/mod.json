@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "age-of-dynasties-remake",
+  "displayName": "Age of Dynasties (Remake)",
+  "subtitle": "AoE3:TAD total conversion",
+  "accentColor": "#c8a24e",
+  "author": "Huanglukuzhu & Omkar_Satapathy",
+  "maintainers": ["Gorgorito12"],
+  "officialWebsite": "https://www.moddb.com/mods/age-of-dynasties-further-development",
+  "links": [
+    { "type": "moddb", "url": "https://www.moddb.com/mods/age-of-dynasties-further-development" },
+    { "type": "forum", "url": "https://aoe3.heavengames.com/cgi-bin/forums/display.cgi?action=st&fn=14&tn=39246" }
+  ],
+  "icon": "icon.png",
+  "heroImage": "hero.png",
+  "description": {
+    "en": "Total conversion set across Europe and Asia with 17 civilizations: British, French, Spanish, Swedes, Austrians, Prussians, Russians, Polish, Ottomans, Persians, Mongols, Indians, Ming, Manchurians, Koreans, Japanese and Indochinese, each with its own home city, technologies and units. Adds new buildings and maps with a day and night cycle. Built on The Asian Dynasties; it installs in its own folder, so your Age of Empires III stays untouched.",
+    "es": "Conversión total ambientada en Europa y Asia con 17 civilizaciones: británicos, franceses, españoles, suecos, austríacos, prusianos, rusos, polacos, otomanos, persas, mongoles, indios, Ming, manchúes, coreanos, japoneses e indochinos, cada una con su metrópoli, tecnologías y unidades. Suma edificios nuevos y mapas con ciclo de día y noche. Funciona sobre The Asian Dynasties y se instala en su propia carpeta, así que tu Age of Empires III queda intacto."
+  },
+  "sourceRepo": "papillo12/Age-of-Dynasties-Remake",
+  "approvedReleaseTag": "Theta",
+  "userDataFolder": "Age of Dynasties",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\Age of Dynasties (Remake)",
+    "probeFile": "data\\protoz.xml",
+    "marker": "DataPZ.bar",
+    "executable": "age3s.exe",
+    "arguments": "+noIntroCinematics",
+    "privateSetupPath": true,
+    "multiplayerProbeFiles": ["data\\protoz.xml", "data\\techtreez.xml", "data\\stringtablez.xml"]
+  },
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "followLatest": true
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "enhanced-legacy-edition",
+  "displayName": "Enhanced Legacy Edition",
+  "subtitle": "AoE3:TAD vanilla+ overhaul",
+  "accentColor": "#b5651d",
+  "author": "Descryptix",
+  "maintainers": ["Gorgorito12"],
+  "officialWebsite": "https://www.moddb.com/mods/enhanced-legacy-edition",
+  "links": [
+    { "type": "moddb", "url": "https://www.moddb.com/mods/enhanced-legacy-edition" }
+  ],
+  "icon": "icon.png",
+  "heroImage": "hero.png",
+  "description": {
+    "en": "The best vanilla experience for Age of Empires III: The Asian Dynasties: quality-of-life fixes for modern PCs, enhanced graphics and more content that leaves the original gameplay intact, plus two complete new civilizations, the Americans and the Maltese. Built on ESOC Patch Unchained, which comes included; it installs in its own folder with the multiplayer-compatible map set, so your Age of Empires III stays untouched.",
+    "es": "La mejor experiencia vanilla de Age of Empires III: The Asian Dynasties: mejoras de calidad de vida para PCs modernos, gráficos mejorados y más contenido sin alterar la jugabilidad original, además de dos civilizaciones completas nuevas, los americanos y los malteses. Funciona sobre ESOC Patch Unchained, que ya viene incluido; se instala en su propia carpeta con los mapas compatibles con multijugador, así que tu Age of Empires III queda intacto."
+  },
+  "sourceRepo": "papillo12/Enhanced-Legacy-Edition",
+  "approvedReleaseTag": "3.0",
+  "userDataFolder": "Enhanced Legacy Edition",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\Enhanced Legacy Edition",
+    "probeFile": "DataPE.bar",
+    "marker": "data\\Eproto.xml",
+    "executable": "age3e.exe",
+    "arguments": "+noIntroCinematics",
+    "userDataRedirect": true,
+    "multiplayerProbeFiles": ["data\\Eproto.xml", "data\\Etechtree.xml", "data\\Eciv.xml"]
+  },
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "followLatest": true
+    }
+  }
+}
