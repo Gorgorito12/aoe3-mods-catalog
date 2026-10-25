@@ -10,8 +10,8 @@
   ],
   "officialWebsite": "https://www.moddb.com/mods/fire-and-reform",
   "description": {
-    "en": "Historical total conversion for The Asian Dynasties, from the Renaissance to the Thirty Years War, with factions from Europe, Asia and Africa. Reworks armies, economies and decks. Definitive Edition Beta 1.0 is a Chinese-language mod for the original AoE3:TAD. Vietnam and Songhai are disabled in this beta. Includes an updated UHC and noAILimitV2 to address startup crashes on modern Windows. Installs separately from your base game.",
-    "es": "Conversión histórica para The Asian Dynasties, del Renacimiento a la Guerra de los Treinta Años, con facciones de Europa, Asia y África. Rehace ejércitos, economía y barajas. Definitive Edition Beta 1.0 es un mod en chino para el AoE3:TAD original. Vietnam y Songhai están desactivados en esta beta. Incluye UHC actualizado y noAILimitV2 para corregir cierres al arrancar en Windows moderno. Se instala por separado del juego base."
+    "en": "Historical total conversion for The Asian Dynasties, from the Renaissance to the Thirty Years War, with factions from Europe, Asia and Africa. Reworks armies, economies and decks. Definitive Edition Beta 1.0 is a Chinese-language mod for the original AoE3:TAD.",
+    "es": "Conversión histórica para The Asian Dynasties, del Renacimiento a la Guerra de los Treinta Años, con facciones de Europa, Asia y África. Rehace ejércitos, economía y barajas. Definitive Edition Beta 1.0 es un mod en chino para el AoE3:TAD original."
   },
   "sourceRepo": "papillo12/FireAndReform",
   "approvedReleaseTag": "beta-1.0",

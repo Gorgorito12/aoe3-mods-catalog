@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Git synchronization requires explicit permission
+
+- Never run `git pull` without the user's explicit permission for that synchronization.
+- Do not substitute an equivalent operation, such as `git fetch` followed by
+  `git merge` / `git rebase`, or otherwise advance a local branch to the remote
+  state without that permission.
+- The maintainer reviews incoming changes and handles synchronization in GitHub
+  Desktop. Implementing a task, publishing a release or completing a PR does not
+  authorize synchronizing the local checkout.
+
 ## What this repo is
 
 A **data catalog**, not an application. It holds one `mod.json` manifest (plus optional images) per Age of Empires III mod under `mods/<id>/`. A separate **launcher** application (not in this repo) reads these manifests at runtime via `raw.githubusercontent.com` to know what to install, download, and execute. There is nothing to build or run here — the repo's "logic" is the CI that gates pull requests.
