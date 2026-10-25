@@ -1,0 +1,48 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "hundred-days",
+  "displayName": "Hundred Days",
+  "subtitle": "Beta 0.1.0 + Improved HD AI",
+  "accentColor": "#a37c42",
+  "author": "Yomgui, aoenw; Improved HD AI: MystericX",
+  "maintainers": [
+    "Gorgorito12"
+  ],
+  "officialWebsite": "https://www.moddb.com/mods/hundred-days",
+  "description": {
+    "en": "Fight the Napoleonic Wars from the French Revolution to Waterloo with eleven European nations. Command infantry regiments, cavalry and artillery, choose home-city tactics and capture supply points. This total conversion reworks combat, economies and armies, with period uniforms and sounds. Includes Improved HD AI by MystericX.",
+    "es": "Combate en las guerras napoleónicas, de la Revolución francesa a Waterloo, con once naciones europeas. Dirige regimientos de infantería, caballería y artillería, elige tácticas de metrópoli y captura puntos de abastecimiento. Esta conversión rehace combates, economía y ejércitos, con uniformes y sonidos de época. Incluye Improved HD AI de MystericX."
+  },
+  "sourceRepo": "papillo12/hundred-days",
+  "approvedReleaseTag": "beta-0.10",
+  "userDataFolder": "AoE III - Hundred Days",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\Hundred Days",
+    "probeFile": "data\\protoo.xml",
+    "marker": "DataPO.bar",
+    "executable": "age3o.exe",
+    "arguments": "+noIntroCinematics",
+    "privateSetupPath": true,
+    "supersedeCompiledXml": true,
+    "userDataPayload": "userdata.zip",
+    "multiplayerProbeFiles": [
+      "data\\protoo.xml",
+      "data\\techtreeo.xml",
+      "data\\randommapstringso.xml",
+      "DataPO.bar",
+      "AI5\\aiLoaderStandard.xs",
+      "AI5\\aiHundredDaysMain.xs"
+    ]
+  },
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "externalAssetUrlTemplate": "https://github.com/papillo12/hundred-days/releases/download/{tag}/HundredDays-0.1.0-beta-payload.zip",
+      "externalAssetSha256": "45f7d98c1b88a51b986e33163b044fbe08d3d594080ae36f2da42649c09e4816"
+    }
+  },
+  "icon": "icon.png",
+  "banner": "banner.jpg",
+  "heroImage": "hero.jpg"
+}
