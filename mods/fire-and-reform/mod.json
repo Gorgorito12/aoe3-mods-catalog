@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "fire-and-reform",
+  "displayName": "Fire and Reform DE",
+  "subtitle": "Definitive Edition Beta 1.0 · Chinese",
+  "accentColor": "#b34728",
+  "author": "Miracle Studio",
+  "maintainers": [
+    "Gorgorito12"
+  ],
+  "officialWebsite": "https://www.moddb.com/mods/fire-and-reform",
+  "description": {
+    "en": "Historical total conversion for The Asian Dynasties, from the Renaissance to the Thirty Years War, with factions from Europe, Asia and Africa. Reworks armies, economies and decks. Definitive Edition Beta 1.0 is a Chinese-language mod for the original AoE3:TAD. Vietnam and Songhai are disabled in this beta. Includes an updated UHC and noAILimitV2 to address startup crashes on modern Windows. Installs separately from your base game.",
+    "es": "Conversión histórica para The Asian Dynasties, del Renacimiento a la Guerra de los Treinta Años, con facciones de Europa, Asia y África. Rehace ejércitos, economía y barajas. Definitive Edition Beta 1.0 es un mod en chino para el AoE3:TAD original. Vietnam y Songhai están desactivados en esta beta. Incluye UHC actualizado y noAILimitV2 para corregir cierres al arrancar en Windows moderno. Se instala por separado del juego base."
+  },
+  "sourceRepo": "Gorgorito12/Fire-and-Reform",
+  "approvedReleaseTag": "beta1.0",
+  "userDataFolder": "Fire and Reform DE",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\Fire and Reform DE",
+    "probeFile": "data\\protoy.xml",
+    "marker": "AI3\\111.personality",
+    "executable": "age3y.exe",
+    "arguments": "+noIntroCinematics",
+    "userDataRedirect": true,
+    "privateSetupPath": true
+  },
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "externalAssetUrlTemplate": "https://github.com/Gorgorito12/Fire-and-Reform/releases/download/{tag}/FireAndReform-beta1.0-win11.zip",
+      "externalAssetSha256": "8872192388310f416a8d63f52561f811773b43c3bb1fefc0f9213bd939ba7d6f"
+    }
+  },
+  "icon": "icon.png",
+  "banner": "banner.jpg",
+  "heroImage": "hero.jpg"
+}
