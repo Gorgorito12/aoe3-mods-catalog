@@ -1,0 +1,45 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "the-ottoman-empire",
+  "displayName": "The Ottoman Empire",
+  "subtitle": "1.01 · Ottoman total conversion",
+  "accentColor": "#b83932",
+  "author": "PredatoR_TR",
+  "maintainers": [
+    "Gorgorito12"
+  ],
+  "officialWebsite": "https://www.moddb.com/mods/age-of-empires-iii-the-ottoman-empire-mod",
+  "description": {
+    "en": "Ottoman-focused total conversion for The Asian Dynasties by PredatoR_TR. Version 1.01 includes Ottoman units, technologies, artwork and sounds. Preserves the original mod files and uses English text tables. Installs in an isolated folder with separate saves; requires your own Age of Empires III: The Asian Dynasties.",
+    "es": "Conversión centrada en el Imperio otomano para The Asian Dynasties, de PredatoR_TR. La versión 1.01 incluye unidades, tecnologías, gráficos y sonidos otomanos. Conserva los archivos originales del mod y utiliza tablas de texto en inglés. Se instala en una carpeta aislada con partidas separadas; requiere tu propia copia de Age of Empires III: The Asian Dynasties."
+  },
+  "userDataFolder": "The Ottoman Empire",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\The Ottoman Empire",
+    "probeFile": "Art\\ui\\techs\\otto\\mimar.ddt",
+    "marker": "Art\\units\\wardogs\\kangal.gr2",
+    "executable": "age3y.exe",
+    "arguments": "+noIntroCinematics",
+    "privateSetupPath": true,
+    "userDataRedirect": true,
+    "supersedeCompiledXml": true,
+    "multiplayerProbeFiles": [
+      "data\\protoy.xml.xmb",
+      "data\\techtreey.xml.xmb",
+      "data\\stringtabley.xml.xmb"
+    ]
+  },
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "externalAssetUrlTemplate": "https://github.com/papillo12/The-Ottoman-Empire/releases/download/{tag}/TheOttomanEmpire-1.01-payload.zip",
+      "externalAssetSha256": "dada2a91ce1e6346ab79afab99d767dc6b20993cf02c9f13178a90600aa922e4"
+    }
+  },
+  "icon": "icon.png",
+  "banner": "banner.jpg",
+  "heroImage": "hero.jpg",
+  "sourceRepo": "papillo12/The-Ottoman-Empire",
+  "approvedReleaseTag": "1.01"
+}

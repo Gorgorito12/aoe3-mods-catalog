@@ -1,0 +1,45 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "aoe3-unleashed",
+  "displayName": "AoE3 Unleashed Reloaded",
+  "subtitle": "1.013b · Classic TAD overhaul",
+  "accentColor": "#6598b6",
+  "author": "RomRomRya",
+  "maintainers": [
+    "Gorgorito12"
+  ],
+  "officialWebsite": "https://www.moddb.com/mods/age-of-empires-3-unleashed",
+  "description": {
+    "en": "An overhaul of classic The Asian Dynasties by RomRomRya. Reloaded 1.013b expands population and building limits, strengthens fortifications, updates AI, and adds firearm sounds, unit visuals and HD flags. Uses English text and installs in an isolated folder with separate saves. Requires your own Age of Empires III: The Asian Dynasties.",
+    "es": "Revisión de The Asian Dynasties clásico, de RomRomRya. Reloaded 1.013b amplía los límites de población y construcción, refuerza las fortificaciones, modifica la IA e incorpora sonidos de armas, gráficos de unidades y banderas HD. Utiliza textos en inglés y se instala en una carpeta aislada con partidas separadas. Requiere tu propia copia de Age of Empires III: The Asian Dynasties."
+  },
+  "userDataFolder": "AoE3 Unleashed Reloaded",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\AoE3 Unleashed Reloaded",
+    "probeFile": "art\\ui\\home_city\\hc_civ_british.ddt",
+    "marker": "Sound\\cannonshot4.wav",
+    "executable": "age3y.exe",
+    "arguments": "+noIntroCinematics",
+    "privateSetupPath": true,
+    "userDataRedirect": true,
+    "supersedeCompiledXml": true,
+    "multiplayerProbeFiles": [
+      "data\\protoy.xml.xmb",
+      "data\\techtreey.xml.xmb",
+      "data\\stringtabley.xml.xmb"
+    ]
+  },
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "externalAssetUrlTemplate": "https://github.com/papillo12/Age-of-Empires-3-Unleashed/releases/download/{tag}/AoE3UnleashedReloaded-1.013b-payload.zip",
+      "externalAssetSha256": "b68bb5b2191abb96f377128ed5b21eb85a7eb18092a1e0408a6588687f6052af"
+    }
+  },
+  "icon": "icon.png",
+  "banner": "banner.jpg",
+  "heroImage": "hero.jpg",
+  "sourceRepo": "papillo12/Age-of-Empires-3-Unleashed",
+  "approvedReleaseTag": "1.013b"
+}

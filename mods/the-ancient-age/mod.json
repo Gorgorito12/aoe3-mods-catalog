@@ -1,0 +1,46 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "the-ancient-age",
+  "displayName": "The Ancient Age",
+  "subtitle": "Alpha 0.1 · Romans and Hellenes",
+  "accentColor": "#b58c49",
+  "author": "The Ancient Age Team / TilanusCommodor",
+  "maintainers": [
+    "Gorgorito12"
+  ],
+  "officialWebsite": "https://www.moddb.com/mods/the-ancient-age",
+  "description": {
+    "en": "Ancient-world conversion for The Asian Dynasties. This alpha introduces playable Romans and Hellenes, their units and home cities, and the custom map TAA Germania. The release is unfinished: its README documents missing sounds, artwork and other features. Installs in an isolated folder with separate saves. Distributed as TAA-0.1.1; the included README calls it Alpha 0.1.",
+    "es": "Conversión de la Antigüedad para The Asian Dynasties. Esta alpha incorpora romanos y helenos jugables, sus unidades y metrópolis, y el mapa personalizado TAA Germania. Es una versión incompleta: el README documenta sonidos, gráficos y otras funciones pendientes. Se instala en una carpeta aislada con partidas separadas. El archivo se llama TAA-0.1.1; su README la identifica como Alpha 0.1."
+  },
+  "sourceRepo": "papillo12/The-Ancient-Age",
+  "approvedReleaseTag": "Alpha-0.1",
+  "userDataFolder": "The Ancient Age",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\The Ancient Age",
+    "probeFile": "data\\RomanHC.xml.xmb",
+    "marker": "data\\HellenesHC.xml.xmb",
+    "executable": "age3y.exe",
+    "arguments": "+noIntroCinematics",
+    "privateSetupPath": true,
+    "userDataRedirect": true,
+    "userDataPayload": "userdata.zip",
+    "multiplayerProbeFiles": [
+      "data\\protoy.xml.xmb",
+      "data\\techtreey.xml.xmb",
+      "data\\stringtabley.xml.XMB"
+    ],
+    "supersedeCompiledXml": true
+  },
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "externalAssetUrlTemplate": "https://github.com/papillo12/The-Ancient-Age/releases/download/{tag}/TAA-0.1.1-payload.zip",
+      "externalAssetSha256": "8d7a19211751943b2ddb2d5809d87b6316c5573f857b44a64c94fb604dbb0013"
+    }
+  },
+  "icon": "icon.png",
+  "banner": "banner.jpg",
+  "heroImage": "hero.jpg"
+}

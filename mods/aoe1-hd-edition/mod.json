@@ -1,0 +1,40 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Gorgorito12/aoe3-mods-catalog/main/schema/mod.schema.json",
+  "id": "aoe1-hd-edition",
+  "displayName": "Age of Empires 1: HD Edition",
+  "subtitle": "Version 2.0 · Multiplayer",
+  "accentColor": "#c29a52",
+  "author": "StandardOfUr (yohomes) / Age of Empires 1:HD Edition",
+  "maintainers": [
+    "Gorgorito12"
+  ],
+  "officialWebsite": "https://www.moddb.com/mods/age-of-empires-hd-edition",
+  "description": {
+    "en": "Recreates the first Age of Empires in The Asian Dynasties, from the Stone Age to the Iron Age, with 12 ancient civilizations, unique units, trade routes, artifacts and ruins. Version 2.0 is multiplayer only. Enable Custom Maps to use its nine maps and create a new home city to avoid inherited AoE3 cards. Installs in its own folder with separate saves.",
+    "es": "Recrea el primer Age of Empires en The Asian Dynasties, de la Edad de Piedra a la del Hierro, con 12 civilizaciones antiguas, unidades únicas, rutas comerciales, artefactos y ruinas. La versión 2.0 es solo multijugador. Activa Mapas personalizados para usar sus nueve mapas y crea una metrópoli nueva para evitar cartas heredadas de AoE3. Se instala en su propia carpeta y separa las partidas guardadas."
+  },
+  "sourceRepo": "papillo12/AgeofEmpires1-HDEdition",
+  "approvedReleaseTag": "2.0",
+  "userDataFolder": "Age of Empires 1 HD Edition",
+  "install": {
+    "type": "IsolatedFolder",
+    "defaultFolder": "C:\\Program Files (x86)\\Age of Empires 1 HD Edition",
+    "probeFile": "AoE1ModVersion.txt",
+    "marker": "art\\50by50s\\assy_brz_hse.ddt",
+    "executable": "age3y.exe",
+    "arguments": "+noIntroCinematics",
+    "userDataRedirect": true,
+    "userDataPayload": "userdata.zip",
+    "supersedeCompiledXml": true
+  },
+  "update": {
+    "mechanism": "GitHubReleases",
+    "github": {
+      "externalAssetUrlTemplate": "https://github.com/papillo12/AgeofEmpires1-HDEdition/releases/download/{tag}/AoE1HDEdition-2.0-win11-payload.zip",
+      "externalAssetSha256": "4e79fa222d4c9f27512a6fb19b63c8e786060e52ce8dc62fb5d8950d7488295c"
+    }
+  },
+  "icon": "icon.png",
+  "banner": "banner.jpg",
+  "heroImage": "hero.jpg"
+}
