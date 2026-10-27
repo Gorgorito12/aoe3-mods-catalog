@@ -33,8 +33,7 @@
   "update": {
     "mechanism": "GitHubReleases",
     "github": {
-      "externalAssetUrlTemplate": "https://github.com/papillo12/Age-of-Empires-3-Unleashed/releases/download/{tag}/AoE3UnleashedReloaded-1.013b-payload.zip",
-      "externalAssetSha256": "b68bb5b2191abb96f377128ed5b21eb85a7eb18092a1e0408a6588687f6052af"
+      "followLatest": true
     }
   },
   "icon": "icon.png",

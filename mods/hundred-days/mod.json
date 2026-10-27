@@ -38,8 +38,7 @@
   "update": {
     "mechanism": "GitHubReleases",
     "github": {
-      "externalAssetUrlTemplate": "https://github.com/papillo12/hundred-days/releases/download/{tag}/HundredDays-0.1.0-beta-payload.zip",
-      "externalAssetSha256": "45f7d98c1b88a51b986e33163b044fbe08d3d594080ae36f2da42649c09e4816"
+      "followLatest": true
     }
   },
   "icon": "icon.png",

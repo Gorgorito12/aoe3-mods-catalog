@@ -30,8 +30,7 @@
   "update": {
     "mechanism": "GitHubReleases",
     "github": {
-      "externalAssetUrlTemplate": "https://github.com/papillo12/AgeofEmpires1-HDEdition/releases/download/{tag}/AoE1HDEdition-2.0-win11-payload.zip",
-      "externalAssetSha256": "4e79fa222d4c9f27512a6fb19b63c8e786060e52ce8dc62fb5d8950d7488295c"
+      "followLatest": true
     }
   },
   "icon": "icon.png",

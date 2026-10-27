@@ -29,8 +29,7 @@
   "update": {
     "mechanism": "GitHubReleases",
     "github": {
-      "externalAssetUrlTemplate": "https://github.com/papillo12/FireAndReform/releases/download/{tag}/FireAndReform-beta1.0-win11.zip",
-      "externalAssetSha256": "8872192388310f416a8d63f52561f811773b43c3bb1fefc0f9213bd939ba7d6f"
+      "followLatest": true
     }
   },
   "icon": "icon.png",

@@ -33,8 +33,7 @@
   "update": {
     "mechanism": "GitHubReleases",
     "github": {
-      "externalAssetUrlTemplate": "https://github.com/papillo12/The-Ottoman-Empire/releases/download/{tag}/TheOttomanEmpire-1.01-payload.zip",
-      "externalAssetSha256": "dada2a91ce1e6346ab79afab99d767dc6b20993cf02c9f13178a90600aa922e4"
+      "followLatest": true
     }
   },
   "icon": "icon.png",

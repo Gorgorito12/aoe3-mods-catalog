@@ -36,8 +36,7 @@
   "update": {
     "mechanism": "GitHubReleases",
     "github": {
-      "externalAssetUrlTemplate": "https://github.com/papillo12/The-Ancient-Age/releases/download/{tag}/TAA-0.1.1-payload.zip",
-      "externalAssetSha256": "8d7a19211751943b2ddb2d5809d87b6316c5573f857b44a64c94fb604dbb0013"
+      "followLatest": true
     }
   },
   "icon": "icon.png",
